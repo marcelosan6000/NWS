@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Neurowave Studio v4.0 | Subliminal + Meditaciones + Segmentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --bg: #0a0e17;
+            --surface: #111827;
+            --surface2: #1a2538;
+            --surface3: #0f172a;
+            --accent: #00d4ff;
+            --accent2: #7c3aed;
+            --accent3: #10b981;
+            --accent4: #f59e0b;
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --muted: #64748b;
+            --border: #1e293b;
+            --border-light: #334155;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent2);
+            border-radius: 10px;
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .header {
+            margin-bottom: 28px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .header-left h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .header-left h1 small {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+            color: var(--text-secondary);
+        }
+        .header-sub {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .badge-pro {
+            background: var(--accent2);
+            color: #fff;
+        }
+        .badge-new {
+            background: var(--accent4);
+            color: #000;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-online {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+        .status-offline {
+            background: var(--danger);
+        }
+        .header-status {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ===== DASHBOARD GRID ===== */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        @media (max-width: 1200px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .card:hover {
+            border-color: var(--border-light);
+        }
+        .card-header {
+            padding: 14px 20px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-body {
+            padding: 18px 20px 20px;
+        }
+
+        /* ===== INFO TOOLTIP ===== */
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--muted);
+            color: var(--bg);
+            font-size: 10px;
+            font-weight: 700;
+            cursor: help;
+            margin-left: 6px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .info-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface3);
+            color: var(--text);
+            font-size: 0.65rem;
+            font-weight: 400;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            white-space: nowrap;
+            z-index: 100;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            pointer-events: none;
+        }
+
+        /* ===== FORM ELEMENTS ===== */
+        .field {
+            margin-bottom: 8px;
+        }
+        .field label {
+            display: block;
+            font-size: 0.6rem;
+            color: var(--muted);
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 600;
+        }
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 10px;
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            border-color: var(--accent);
+        }
+        .field textarea {
+            font-family: 'Inter', monospace;
+            resize: vertical;
+            min-height: 50px;
+        }
+        input[type="range"] {
+            width: 100%;
+            padding: 0;
+            background: transparent;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+        input[type="checkbox"] {
+            width: auto;
+            accent-color: var(--accent);
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+        .slider-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--accent);
+            text-align: right;
+            min-width: 40px;
+            flex-shrink: 0;
+        }
+        .range-wrap {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .range-wrap input[type="range"] {
+            flex: 1;
+        }
+
+        /* ===== GRIDS ===== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+        }
+        @media (max-width: 600px) {
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* ===== OSCILLATOR CARD ===== */
+        .oscillator-card {
+            background: var(--surface3);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            transition: border-color 0.2s;
+        }
+        .oscillator-card:hover {
+            border-color: var(--accent);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+        .btn-secondary {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--border-light);
+        }
+        .btn-preview {
+            background: var(--accent4);
+            color: #000;
+        }
+        .btn-preview:hover:not(:disabled) {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+            padding: 2px 10px;
+            font-size: 0.65rem;
+        }
+        .btn-danger:hover:not(:disabled) {
+            filter: brightness(0.85);
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 0.65rem;
+        }
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin: 12px 0 8px;
+        }
+        .btn-group .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 0.8rem;
+        }
+
+        /* ===== MODE SELECTOR ===== */
+        .mode-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 10px 8px;
+            border-radius: var(--radius);
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        .mode-btn small {
+            display: block;
+            font-size: 0.55rem;
+            font-weight: 400;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-color: var(--accent);
+            color: #fff;
+        }
+        .mode-btn.active small {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .mode-btn:hover:not(.active) {
+            border-color: var(--border-light);
+            color: var(--text);
+        }
+
+        /* ===== DURATION BUTTONS ===== */
+        .duration-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .duration-buttons .btn {
+            flex: 0 0 auto;
+            padding: 4px 12px;
+            font-size: 0.6rem;
+        }
+
+        /* ===== ADSR CANVAS ===== */
+        .adsr-canvas {
+            background: var(--surface3);
+            border-radius: var(--radius-sm);
+            width: 100%;
+            height: 90px;
+            margin-top: 8px;
+            border: 1px solid var(--border);
+            display: block;
+        }
+
+        /* ===== PROGRESS ===== */
+        .progress-bar {
+            background: var(--surface2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 12px 0 8px;
+            height: 6px;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        /* ===== SCIENCE PREVIEW ===== */
+        .science-preview {
+            background: rgba(124, 58, 237, 0.08);
+            border-left: 3px solid var(--accent2);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.7rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        .science-preview strong {
+            color: var(--text);
+        }
+
+        /* ===== NOISE CONTROL ===== */
+        .noise-control {
+            background: var(--surface3);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-top: 12px;
+            border: 1px solid var(--border);
+        }
+
+        /* ===== TOAST ===== */
+        .toast-wrap {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 380px;
+        }
+        .toast {
+            background: var(--surface2);
+            border-left: 3px solid var(--accent);
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            animation: slideIn 0.3s ease;
+            box-shadow: var(--shadow);
+            color: var(--text);
+        }
+        .toast.ok {
+            border-left-color: var(--success);
+        }
+        .toast.err {
+            border-left-color: var(--danger);
+        }
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .preview-active {
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 0.65rem;
+            color: var(--muted);
+            padding: 20px 0 8px;
+            border-top: 1px solid var(--border);
+            line-height: 1.8;
+        }
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* ===== RESPONSIVE TWEAKS ===== */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            .header-left h1 {
+                font-size: 1.3rem;
+            }
+            .header-left h1 small {
+                font-size: 0.7rem;
+                display: block;
+            }
+            .card-body {
+                padding: 14px;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .mode-selector {
+                flex-wrap: wrap;
+            }
+            .mode-btn {
+                flex: 1 1 30%;
+                min-width: 80px;
+            }
+            .toast-wrap {
+                max-width: 90%;
+                right: 5%;
+                bottom: 10px;
+            }
+        }
+        @media (max-width: 480px) {
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== UTILITY ===== */
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+        .mt-16 {
+            margin-top: 16px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .gap-6 {
+            gap: 6px;
+        }
+        .gap-12 {
+            gap: 12px;
+        }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-muted {
+            color: var(--text-secondary);
+        }
+        .text-accent {
+            color: var(--accent);
+        }
+        .w-full {
+            width: 100%;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .block {
+            display: block !important;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 12px 0;
+        }
+        .preset-select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-size: 0.8rem;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .preset-select:focus {
+            border-color: var(--accent);
+        }
+        .status-msg {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-align: center;
+            min-height: 1.4em;
+        }
+        .download-link {
+            color: var(--accent);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <div class="header-left">
+                <h1>🧠 Neurowave Studio <small>v4.0 · Subliminal + Guiada + Segmentos</small></h1>
+                <div class="header-sub">
+                    <span>Sintetizador terapéutico con voz audible y mensajes subliminales</span>
+                    <span class="badge badge-pro">Isocrónico / Binaural / Guiado</span>
+                    <span class="badge badge-new">🎧 Preview 10s · Segmentos · Marcas</span>
+                    <span class="header-status" id="serverStatus"><span class="status-dot status-offline"></span> Local</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== DASHBOARD ===== -->
+        <div class="dashboard">
+
+            <!-- COLUMNA 1: OSCILADORES -->
+            <div class="card">
+                <div class="card-header">🎹 OSCILADORES <span style="font-weight:400;font-size:0.6rem;color:var(--text-secondary);">polifonía</span></div>
+                <div class="card-body">
+                    <div id="oscillatorsContainer"></div>
+                    <button class="btn btn-secondary btn-sm btn-block" onclick="addOscillator()" style="margin-top:6px;">+ Añadir Oscilador</button>
+                    <hr />
+                    <div class="field">
+                        <label>🎧 Ancho estéreo</label>
+                        <div class="range-wrap">
+                            <input type="range" id="panWidth" min="0" max="1" step="0.05" value="0.7" oninput="updatePanDisplay()" />
+                            <span class="slider-value" id="panWidthVal">0.70</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA 2: ADSR + LFO + FILTRO + RUIDO -->
+            <div class="card">
+                <div class="card-header">🎛️ ENVOLVENTE ADSR</div>
+                <div class="card-body">
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Ataque (s)</label>
+                            <div class="range-wrap">
+                                <input type="range" id="attack" min="0" max="30" step="0.5" value="15" oninput="updateADSRDisplay()" />
+                                <span class="slider-value" id="attackVal">15.0</span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Decaimiento (s)</label>
+                            <div class="range-wrap">
+                                <input type="range" id="decay" min="0" max="10" step="0.5" value="5" oninput="updateADSRDisplay()" />
+                                <span class="slider-value" id="decayVal">5.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Sostenido</label>
+                            <div class="range-wrap">
+                                <input type="range" id="sustain" min="0" max="1" step="0.01" value="0.68" oninput="updateADSRDisplay()" />
+                                <span class="slider-value" id="sustainVal">0.68</span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Liberación (s)</label>
+                            <div class="range-wrap">
+                                <input type="range" id="release" min="0" max="30" step="0.5" value="18" oninput="updateADSRDisplay()" />
+                                <span class="slider-value" id="releaseVal">18.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="adsrCanvas" class="adsr-canvas" width="400" height="90"></canvas>
+
+                    <div class="card-header" style="margin:16px 0 8px 0;padding:0;font-size:0.7rem;">
+                        <span>🌀 LFO (MODULACIÓN)</span>
+                    </div>
+                    <div class="grid-3">
+                        <div class="field"><label>Activar</label><input type="checkbox" id="lfoEnabled" /></div>
+                        <div class="field"><label>Forma</label><select id="lfoWave"><option>sine</option><option>triangle</option><option>square</option></select></div>
+                        <div class="field">
+                            <label>Frec. (Hz)</label>
+                            <div class="range-wrap">
+                                <input type="range" id="lfoFreq" min="0.01" max="5" step="0.01" value="0.06" oninput="updateLFODisplay()" />
+                                <span class="slider-value" id="lfoFreqVal">0.06</span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Profundidad</label>
+                            <div class="range-wrap">
+                                <input type="range" id="lfoDepth" min="0" max="0.3" step="0.01" value="0.07" oninput="updateLFODisplay()" />
+                                <span class="slider-value" id="lfoDepthVal">0.07</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-header" style="margin:16px 0 8px 0;padding:0;font-size:0.7rem;">
+                        <span>🔊 FILTRO</span>
+                    </div>
+                    <div class="grid-3">
+                        <div class="field"><label>Activar</label><input type="checkbox" id="filterEnabled" /></div>
+                        <div class="field"><label>Tipo</label><select id="filterType"><option>lowpass</option><option>highpass</option><option>bandpass</option></select></div>
+                        <div class="field">
+                            <label>Corte (Hz)</label>
+                            <div class="range-wrap">
+                                <input type="range" id="filterCutoff" min="50" max="4000" step="10" value="650" oninput="updateFilterDisplay()" />
+                                <span class="slider-value" id="filterCutoffVal">650</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="noise-control">
+                        <div class="flex-between" style="margin-bottom:8px;">
+                            <span style="font-weight:600;font-size:0.7rem;color:var(--accent);">🌊 RUIDO TERAPÉUTICO</span>
+                        </div>
+                        <div class="grid-3">
+                            <div class="field"><label>Activar</label><input type="checkbox" id="noiseEnabled" checked /></div>
+                            <div class="field"><label>Tipo</label><select id="noiseType"><option>pink</option><option>brown</option><option>white</option></select></div>
+                            <div class="field">
+                                <label>Volumen</label>
+                                <div class="range-wrap">
+                                    <input type="range" id="noiseVolume" min="0" max="0.35" step="0.01" value="0.16" oninput="updateNoiseDisplay()" />
+                                    <span class="slider-value" id="noiseVolumeVal">0.16</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA 3: PRESETS + MODO + DURACIÓN + SUBLIMINAL + GUIADA + GENERAR + MARCAS -->
+            <div class="card">
+                <div class="card-header">💊 PRESETS TERAPÉUTICOS</div>
+                <div class="card-body">
+                    <select id="presetSelect" class="preset-select" onchange="loadPreset()">
+                        <option value="">-- Personalizado --</option>
+                    </select>
+                    <div id="scienceBox" class="science-preview hidden"></div>
+
+                    <div class="card-header" style="margin:16px 0 8px 0;padding:0;font-size:0.7rem;">
+                        <span>🎛️ MODO DE AUDIO</span>
+                    </div>
+                    <div class="mode-selector">
+                        <button id="btnIsochronic" class="mode-btn active" onclick="setAudioMode('isochronic')">🔔 ISOCRÓNICO<small>Sin auriculares</small></button>
+                        <button id="btnBinaural" class="mode-btn" onclick="setAudioMode('binaural')">🎧 BINAURAL<small>Auriculares</small></button>
+                        <button id="btnGuided" class="mode-btn" onclick="setAudioMode('guided')">🎙️ GUIADA<small>Voz audible</small></button>
+                    </div>
+
+                    <div class="card-header" style="margin:16px 0 8px 0;padding:0;font-size:0.7rem;">
+                        <span>⏱️ DURACIÓN</span>
+                    </div>
+                    <div class="range-wrap">
+                        <input type="range" id="duration" min="30" max="28800" step="30" value="3600" oninput="updateDurationLabel()" />
+                        <span class="slider-value" id="durationVal">01:00:00</span>
+                    </div>
+                    <div class="duration-buttons">
+                        <button class="btn btn-secondary btn-sm" onclick="setDuration(300)">5 min</button>
+                        <button class="btn btn-secondary btn-sm" onclick="setDuration(600)">10 min</button>
+                        <button class="btn btn-secondary btn-sm" onclick="setDuration(1800)">30 min</button>
+                        <button class="btn btn-secondary btn-sm" onclick="setDuration(3600)">1 h</button>
+                        <button class="btn btn-secondary btn-sm" onclick="setDuration(5400)">90 min</button>
+                        <button class="btn btn-secondary btn-sm" onclick="setDuration(7200)">2 h</button>
+                        <button class="btn btn-secondary btn-sm" onclick="setDuration(14400)">4 h</button>
+                        <button class="btn btn-secondary btn-sm" onclick="setDuration(28800)">8 h</button>
+                    </div>
+
+                    <div class="field" style="margin:14px 0 6px;">
+                        <label>🏷️ NOMBRE DE SESIÓN</label>
+                        <input type="text" id="sessionName" placeholder="Ej. Meditación Theta 639 Hz" value="Sesion_Pro" />
+                    </div>
+
+                    <!-- SUBLIMINAL -->
+                    <div class="card-header" style="margin:16px 0 8px 0;padding:0;font-size:0.7rem;">
+                        <span>🧠 MENSAJES SUBLIMINALES</span>
+                        <span class="info-icon" data-tooltip="Afirmaciones positivas ocultas a muy bajo volumen.">ⓘ</span>
+                    </div>
+                    <div class="field"><label>Activar canal subliminal</label><input type="checkbox" id="subliminalEnabled" /></div>
+                    <div id="subliminalConfig" class="hidden mt-8">
+                        <div class="field"><label>Frases positivas (una por línea)</label><textarea id="subliminalPhrases" rows="3"></textarea></div>
+                        <div class="grid-3">
+                            <div class="field"><label>Idioma</label><input type="text" id="ttsLanguage" value="es" /></div>
+                            <div class="field">
+                                <label>Velocidad</label>
+                                <div class="range-wrap">
+                                    <input type="range" id="ttsSpeed" min="0.5" max="2" step="0.05" value="1.0" oninput="updateTtsSpeedDisplay()" />
+                                    <span class="slider-value" id="ttsSpeedVal">1.00</span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Volumen (dB)</label>
+                                <div class="range-wrap">
+                                    <input type="range" id="subliminalVolume" min="-40" max="-10" step="1" value="-30" oninput="updateSubliminalVolumeDisplay()" />
+                                    <span class="slider-value" id="subliminalVolumeVal">-30</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field"><label>Intervalo entre frases (s)</label><input type="number" id="repeatInterval" value="50" step="5" /></div>
+                        <button class="btn btn-secondary btn-sm btn-block" onclick="previewSubliminal()" style="margin-top:6px;">🎧 Escuchar Preview Subliminal</button>
+                    </div>
+
+                    <!-- GUIADA -->
+                    <div id="guidedSection" class="hidden mt-16">
+                        <div class="card-header" style="margin:0 0 8px 0;padding:0;font-size:0.7rem;">
+                            <span>📜 GUION DE MEDITACIÓN (voz audible)</span>
+                        </div>
+                        <div class="field">
+                            <label>Texto (una frase por línea)</label>
+                            <textarea id="guidedScript" rows="6" placeholder="Ejemplo:&#10;Bienvenido a esta meditación consciente.&#10;Inhala profundamente... 1, 2, 3, 4.&#10;Mantén... 1, 2.&#10;Exhala lentamente... 1, 2, 3, 4, 5, 6.&#10;Siente cómo tu cuerpo se relaja."></textarea>
+                        </div>
+                        <div class="grid-2">
+                            <div class="field">
+                                <label>Volumen voz (dB)</label>
+                                <div class="range-wrap">
+                                    <input type="range" id="guidedVoiceVolume" min="-20" max="0" step="1" value="-6" oninput="updateGuidedVoiceVolume()" />
+                                    <span class="slider-value" id="guidedVoiceVolumeVal">-6</span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Velocidad</label>
+                                <div class="range-wrap">
+                                    <input type="range" id="guidedVoiceSpeed" min="0.1" max="1.2" step="0.05" value="0.9" oninput="updateGuidedVoiceSpeed()" />
+                                    <span class="slider-value" id="guidedVoiceSpeedVal">0.90</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field"><label>Voz</label>
+                            <select id="guidedVoiceName">
+                                <option value="es-ES-ElviraNeural">Elvira (España, fem.)</option>
+                                <option value="es-ES-AlvaroNeural">Álvaro (España, masc.)</option>
+                                <option value="es-MX-DaliaNeural">Dalia (México, fem.)</option>
+                                <option value="es-MX-JorgeNeural">Jorge (México, masc.)</option>
+                                <option value="en-US-JennyNeural">Jenny (EE.UU, fem.)</option>
+                                <option value="en-US-GuyNeural">Guy (EE.UU, masc.)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- MARCAS AUDACITY -->
+                    <div class="card-header" style="margin:16px 0 8px 0;padding:0;font-size:0.7rem;">
+                        <span>🏷️ MARCAS PARA AUDACITY</span>
+                        <span class="info-icon" data-tooltip="Genera archivo de etiquetas con estructura profesional.">ⓘ</span>
+                    </div>
+                    <div class="grid-2">
+                        <div class="field"><label>Tipo de terapia</label>
+                            <select id="therapyType">
+                                <option value="general">General (gancho + inmersión + núcleo + cierre)</option>
+                                <option value="sleep">Sueño (inducción + profundo + despertar)</option>
+                                <option value="meditation">Meditación (preparación + núcleo + regreso)</option>
+                            </select>
+                        </div>
+                        <div class="field" style="display:flex;align-items:flex-end;">
+                            <button class="btn btn-secondary btn-sm btn-block" onclick="downloadAudacityLabels()">📥 Descargar Marcas</button>
+                        </div>
+                    </div>
+                    <div id="customSegmentsPanel" class="hidden mt-8">
+                        <label style="font-size:0.6rem;color:var(--muted);">Segmentos personalizados (JSON)</label>
+                        <textarea id="customSegments" rows="2" placeholder='[{"name":"Gancho","duration":90},{"name":"Inmersión","duration":810}]' style="width:100%;font-size:0.65rem;"></textarea>
+                        <button class="btn btn-secondary btn-sm btn-block" onclick="downloadAudacityLabels()" style="margin-top:4px;">Usar estos segmentos</button>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-preview" id="previewBtn" onclick="previewAudio()">🎧 PREVIEW (10 s)</button>
+                        <button class="btn btn-primary" id="renderBtn" onclick="renderAudio()">🎬 GENERAR WAV</button>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                    <div id="statusMsg" class="status-msg"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="footer">
+            <p>🧠 Basado en investigación neurocientífica: Garcia-Argibay et al. (2019), Beauchene et al. (2017), Jirakittayakorn & Wongsawat (2017)</p>
+            <p>⚠️ No reemplaza tratamiento médico. Si tienes epilepsia o condiciones neurológicas, consulta a tu médico.</p>
+            <p>🎧 El botón PREVIEW genera 10 segundos de prueba para ajustar tu sonido antes de renderizar el audio completo.</p>
+            <p>🧠 Los mensajes subliminales se mezclan a muy bajo volumen con filtro paso bajo.</p>
+            <p>🎙️ Las meditaciones guiadas superponen voz audible sobre el fondo de tonos y ruido.</p>
+            <p style="margin-top:6px;font-size:0.6rem;">Neurowave Studio v4.0 · 100% navegador · Sin servidor necesario</p>
+        </footer>
+    </div>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-wrap" id="toastWrap"></div>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT ===== -->
+    <!-- ============================================================ -->
+    <script>
+        // ================================================================
+        //  ESTADO GLOBAL
+        // ================================================================
+        let oscillators = [
+            { freq: 639, wave: 'sine', volume: 0.30, panLeft: 0.5, panRight: 0.5, fmFreq: 0.4, fmDepth: 0.03 }
+        ];
+        let currentAudioMode = 'isochronic';
+        let isPlayingPreview = false;
+        let isRendering = false;
+        let audioContext = null;
+        let offlineCtx = null;
+
+        // Presets cargados desde el código
+        const PRESETS = {};
+
+        // ================================================================
+        //  TOAST
+        // ================================================================
+        function toast(msg, type = 'info') {
+            const wrap = document.getElementById('toastWrap');
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.textContent = msg;
+            wrap.appendChild(el);
+            setTimeout(() => el.remove(), 4200);
+        }
+
+        // ================================================================
+        //  ESTADO DEL SERVIDOR (simulado local)
+        // ================================================================
+        function updateServerStatus() {
+            const el = document.getElementById('serverStatus');
+            el.innerHTML = '<span class="status-dot status-online"></span> Local · Listo';
+        }
+        updateServerStatus();
+
+        // ================================================================
+        //  PRESETS INTEGRADOS
+        // ================================================================
+        const BUILTIN_PRESETS = {
+            deep_sleep_delta: {
+                name: '💤 DEEP SLEEP Delta 4Hz → 1.2Hz',
+                category: 'sleep',
+                duration_note: '3-8 h. Sueño profundo.',
+                description: 'Inducción al sueño profundo con frecuencias Delta.',
+                benefits: '• Sueño profundo\n• Regeneración celular\n• Reducción del insomnio',
+                params: {
+                    total_duration: 10800,
+                    target_freq: 4,
+                    category: 'sleep',
+                    master_volume: 0.7,
+                    oscillators: [{ freq: 100, wave: 'sine', volume: 0.35, panLeft: 0.5, panRight: 0.5, fmFreq: 0.5,
+                        fmDepth: 0.02 }],
+                    adsr: { attack: 120, decay: 30, sustain: 0.6, release: 90 },
+                    lfo: { enabled: false, freq: 0, depth: 0, wave: 'sine' },
+                    pan: { width: 0.5 },
+                    filter: { enabled: true, type: 'lowpass', cutoff: 120 },
+                    noise: { enabled: true, type: 'brown', volume: 0.25 },
+                    subliminal: { enabled: false },
+                    guided: { enabled: false }
+                }
+            },
+            solfeggio_639: {
+                name: '🌀 SOLFEGGIO 639 Hz — Conexión y Relaciones',
+                category: 'solfeggio',
+                duration_note: '30-90 min. Sanación vincular.',
+                description: 'Sana tus vínculos y armoniza tu entorno con 639 Hz.',
+                benefits: '• Facilita la comunicación\n• Sanación emocional\n• Fomenta la empatía',
+                params: {
+                    total_duration: 3600,
+                    target_freq: 6,
+                    category: 'solfeggio',
+                    master_volume: 0.8,
+                    oscillators: [
+                        { freq: 639, wave: 'sine', volume: 0.30, panLeft: 0.5, panRight: 0.5, fmFreq: 0.4,
+                            fmDepth: 0.03 },
+                        { freq: 645, wave: 'sine', volume: 0.25, panLeft: 0.48, panRight: 0.52, fmFreq: 0.35,
+                            fmDepth: 0.02 }
+                    ],
+                    adsr: { attack: 18, decay: 5, sustain: 0.68, release: 20 },
+                    lfo: { enabled: true, freq: 0.06, depth: 0.07, wave: 'triangle' },
+                    pan: { width: 0.68 },
+                    filter: { enabled: true, type: 'lowpass', cutoff: 650 },
+                    noise: { enabled: true, type: 'pink', volume: 0.16 },
+                    subliminal: { enabled: false },
+                    guided: { enabled: false }
+                }
+            },
+            armonia_432: {
+                name: '🌍 432 Hz — ARMONÍA UNIVERSAL',
+                category: 'sleep',
+                duration_note: '30-120 min. Resuena con la naturaleza.',
+                description: 'Conecta con la vibración natural de nuestro planeta.',
+                benefits: '• Reduce ansiedad y estrés\n• Claridad mental\n• Armoniza el sistema nervioso',
+                params: {
+                    total_duration: 7200,
+                    target_freq: 4,
+                    category: 'sleep',
+                    master_volume: 0.78,
+                    oscillators: [
+                        { freq: 432, wave: 'sine', volume: 0.30, panLeft: 0.5, panRight: 0.5, fmFreq: 0.3,
+                            fmDepth: 0.03 },
+                        { freq: 438, wave: 'sine', volume: 0.24, panLeft: 0.48, panRight: 0.52, fmFreq: 0.25,
+                            fmDepth: 0.02 },
+                        { freq: 216, wave: 'triangle', volume: 0.18, panLeft: 0.5, panRight: 0.5, fmFreq: 0.2,
+                            fmDepth: 0.04 },
+                        { freq: 648, wave: 'sine', volume: 0.12, panLeft: 0.52, panRight: 0.48, fmFreq: 0.35,
+                            fmDepth: 0.02 }
+                    ],
+                    adsr: { attack: 22, decay: 6, sustain: 0.63, release: 22 },
+                    lfo: { enabled: true, freq: 0.05, depth: 0.06, wave: 'sine' },
+                    pan: { width: 0.65 },
+                    filter: { enabled: true, type: 'lowpass', cutoff: 550 },
+                    noise: { enabled: true, type: 'pink', volume: 0.15 },
+                    subliminal: { enabled: false },
+                    guided: { enabled: false }
+                }
+            }
+        };
+
+        // Cargar presets en el selector
+        function loadPresetsIntoSelect() {
+            const select = document.getElementById('presetSelect');
+            // Limpiar opciones existentes (mantener la primera)
+            while (select.options.length > 1) select.remove(1);
+            for (const [id, p] of Object.entries(BUILTIN_PRESETS)) {
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.textContent = p.name;
+                select.appendChild(opt);
+            }
+        }
+        loadPresetsIntoSelect();
+
+        // ================================================================
+        //  PRESET LOADER
+        // ================================================================
+        function loadPreset() {
+            const id = document.getElementById('presetSelect').value;
+            if (!id) {
+                document.getElementById('scienceBox').classList.add('hidden');
+                return;
+            }
+            const preset = BUILTIN_PRESETS[id];
+            if (!preset) { toast('Preset no encontrado', 'err'); return; }
+            const p = preset.params;
+
+            // Aplicar parámetros
+            if (p.total_duration) { document.getElementById('duration').value = p.total_duration;
+                updateDurationLabel(); }
+            if (p.oscillators && p.oscillators.length > 0) {
+                oscillators = p.oscillators.map(o => ({
+                    freq: o.freq || 440,
+                    wave: o.wave || 'sine',
+                    volume: o.volume || 0.25,
+                    panLeft: o.panLeft !== undefined ? o.panLeft : 0.5,
+                    panRight: o.panRight !== undefined ? o.panRight : 0.5,
+                    fmFreq: o.fmFreq || 1,
+                    fmDepth: o.fmDepth || 0
+                }));
+                renderOscillators();
+            }
+            if (p.adsr) {
+                document.getElementById('attack').value = p.adsr.attack;
+                document.getElementById('decay').value = p.adsr.decay;
+                document.getElementById('sustain').value = p.adsr.sustain;
+                document.getElementById('release').value = p.adsr.release;
+                updateADSRDisplay();
+            }
+            if (p.lfo) {
+                document.getElementById('lfoEnabled').checked = p.lfo.enabled;
+                document.getElementById('lfoFreq').value = p.lfo.freq;
+                document.getElementById('lfoDepth').value = p.lfo.depth;
+                document.getElementById('lfoWave').value = p.lfo.wave || 'sine';
+                updateLFODisplay();
+            }
+            if (p.pan && p.pan.width !== undefined) {
+                document.getElementById('panWidth').value = p.pan.width;
+                updatePanDisplay();
+            }
+            if (p.filter) {
+                document.getElementById('filterEnabled').checked = p.filter.enabled;
+                document.getElementById('filterType').value = p.filter.type || 'lowpass';
+                document.getElementById('filterCutoff').value = p.filter.cutoff || 650;
+                updateFilterDisplay();
+            }
+            if (p.noise) {
+                document.getElementById('noiseEnabled').checked = p.noise.enabled !== undefined ? p.noise.enabled : true;
+                document.getElementById('noiseType').value = p.noise.type || 'pink';
+                document.getElementById('noiseVolume').value = p.noise.volume || 0.16;
+                updateNoiseDisplay();
+            }
+            if (p.subliminal) {
+                const chk = document.getElementById('subliminalEnabled');
+                chk.checked = p.subliminal.enabled || false;
+                document.getElementById('subliminalConfig').style.display = chk.checked ? 'block' : 'none';
+                if (p.subliminal.phrases) {
+                    document.getElementById('subliminalPhrases').value = Array.isArray(p.subliminal.phrases) ? p
+                        .subliminal.phrases.join('\n') : p.subliminal.phrases;
+                }
+                if (p.subliminal.voice) {
+                    if (p.subliminal.voice.language) document.getElementById('ttsLanguage').value = p.subliminal.voice
+                        .language;
+                    if (p.subliminal.voice.speed) document.getElementById('ttsSpeed').value = p.subliminal.voice.speed;
+                    updateTtsSpeedDisplay();
+                }
+                if (p.subliminal.mix) {
+                    if (p.subliminal.mix.volume_db !== undefined) document.getElementById('subliminalVolume').value = p
+                        .subliminal.mix.volume_db;
+                    if (p.subliminal.mix.repeat_interval_sec) document.getElementById('repeatInterval').value = p
+                        .subliminal.mix.repeat_interval_sec;
+                    updateSubliminalVolumeDisplay();
+                }
+            }
+            if (p.guided) {
+                const guided = p.guided;
+                if (guided.enabled) {
+                    document.getElementById('guidedSection').style.display = 'block';
+                    if (guided.script) document.getElementById('guidedScript').value = guided.script;
+                    if (guided.voice) {
+                        if (guided.voice.speed) document.getElementById('guidedVoiceSpeed').value = guided.voice.speed;
+                        if (guided.voice.voice) document.getElementById('guidedVoiceName').value = guided.voice.voice;
+                        updateGuidedVoiceSpeed();
+                    }
+                    if (guided.mix && guided.mix.volume_db !== undefined) {
+                        document.getElementById('guidedVoiceVolume').value = guided.mix.volume_db;
+                        updateGuidedVoiceVolume();
+                    }
+                } else {
+                    document.getElementById('guidedSection').style.display = 'none';
+                }
+            }
+
+            // Mostrar info científica
+            const box = document.getElementById('scienceBox');
+            box.classList.remove('hidden');
+            box.innerHTML =
+                `<strong>${preset.name}</strong><br><span style="font-size:0.6rem;color:var(--warning);">${preset.duration_note || ''}</span><p style="margin-top:6px;">${preset.description || ''}</p>${preset.benefits ? '<p style="font-size:0.65rem;color:var(--accent3);">' + preset.benefits.replace(/\n/g,'<br>') + '</p>' : ''}`;
+
+            toast(`✅ Preset cargado: ${preset.name}`, 'ok');
+            drawADSREnvelope();
+        }
+
+        // ================================================================
+        //  OSCILADORES
+        // ================================================================
+        function renderOscillators() {
+            const container = document.getElementById('oscillatorsContainer');
+            if (oscillators.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:0.75rem;">Sin osciladores. Haz clic en "+ Añadir"</div>';
+                return;
+            }
+            container.innerHTML = oscillators.map((osc, idx) => `
+                <div class="oscillator-card">
+                    <div class="grid-4">
+                        <div class="field">
+                            <label>Frecuencia (Hz)</label>
+                            <input type="number" value="${osc.freq}" step="1" onchange="updateOsc(${idx},'freq',parseFloat(this.value))" />
+                        </div>
+                        <div class="field">
+                            <label>Forma</label>
+                            <select onchange="updateOsc(${idx},'wave',this.value)">
+                                ${['sine','square','saw','triangle'].map(w => `<option ${osc.wave===w?'selected':''}>${w}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Volumen</label>
+                            <div class="range-wrap">
+                                <input type="range" min="0" max="0.5" step="0.01" value="${osc.volume}" onchange="updateOsc(${idx},'volume',parseFloat(this.value))" />
+                                <span class="slider-value">${osc.volume.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="field" style="display:flex;align-items:flex-end;justify-content:flex-end;">
+                            <button class="btn btn-danger" onclick="removeOscillator(${idx})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="grid-3">
+                        <div class="field">
+                            <label>Pan izq.</label>
+                            <div class="range-wrap">
+                                <input type="range" min="0" max="1" step="0.05" value="${osc.panLeft}" onchange="updateOsc(${idx},'panLeft',parseFloat(this.value))" />
+                                <span class="slider-value">${osc.panLeft.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Pan der.</label>
+                            <div class="range-wrap">
+                                <input type="range" min="0" max="1" step="0.05" value="${osc.panRight}" onchange="updateOsc(${idx},'panRight',parseFloat(this.value))" />
+                                <span class="slider-value">${osc.panRight.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>FM (prof.)</label>
+                            <div style="display:flex;gap:4px;align-items:center;">
+                                <input type="number" value="${osc.fmFreq}" step="0.1" style="width:45%;" onchange="updateOsc(${idx},'fmFreq',parseFloat(this.value))" />
+                                <input type="range" min="0" max="0.3" step="0.01" value="${osc.fmDepth}" style="width:40%;" onchange="updateOsc(${idx},'fmDepth',parseFloat(this.value))" />
+                                <span class="slider-value">${osc.fmDepth.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateOsc(idx, key, val) {
+            oscillators[idx][key] = val;
+            renderOscillators();
+            drawADSREnvelope();
+        }
+
+        function addOscillator() {
+            oscillators.push({ freq: 440, wave: 'sine', volume: 0.25, panLeft: 0.5, panRight: 0.5, fmFreq: 1, fmDepth: 0 });
+            renderOscillators();
+        }
+
+        function removeOscillator(idx) {
+            oscillators.splice(idx, 1);
+            if (oscillators.length === 0) addOscillator();
+            renderOscillators();
+        }
+
+        // ================================================================
+        //  ADSR CANVAS
+        // ================================================================
+        function drawADSREnvelope() {
+            const canvas = document.getElementById('adsrCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.clientWidth || 400;
+            const h = canvas.clientHeight || 90;
+            canvas.width = w;
+            canvas.height = h;
+            const a = parseFloat(document.getElementById('attack').value) || 0.1;
+            const d = parseFloat(document.getElementById('decay').value) || 0.1;
+            const s = parseFloat(document.getElementById('sustain').value) || 0.5;
+            const r = parseFloat(document.getElementById('release').value) || 0.1;
+            const total = Math.max(a + d + r + 2, 0.1);
+            const px = (x) => (x / total) * w;
+            const py = (y) => h - (y * h * 0.9) - 2;
+
+            ctx.clearRect(0, 0, w, h);
+            ctx.beginPath();
+            ctx.moveTo(0, h);
+            ctx.lineTo(px(a), py(1));
+            ctx.lineTo(px(a + d), py(s));
+            ctx.lineTo(px(a + d + 2), py(s));
+            ctx.lineTo(px(a + d + 2 + r), py(0));
+            ctx.strokeStyle = '#00d4ff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(0,212,255,0.06)';
+            ctx.lineTo(px(a + d + 2 + r), h);
+            ctx.lineTo(0, h);
+            ctx.fill();
+
+            // Etiquetas pequeñas
+            ctx.fillStyle = '#64748b';
+            ctx.font = '8px Inter, sans-serif';
+            ctx.fillText('A', 2, 10);
+            ctx.fillText('D', px(a) + 4, 10);
+            ctx.fillText('S', px(a + d) + 4, 10);
+            ctx.fillText('R', px(a + d + 2) + 4, 10);
+        }
+
+        // ================================================================
+        //  UI UPDATES
+        // ================================================================
+        function updateADSRDisplay() {
+            ['attack', 'decay', 'sustain', 'release'].forEach(id => {
+                const val = parseFloat(document.getElementById(id).value);
+                document.getElementById(id + 'Val').textContent = id === 'sustain' ? val.toFixed(2) : val.toFixed(1);
+            });
+            drawADSREnvelope();
+        }
+
+        function updateLFODisplay() {
+            document.getElementById('lfoFreqVal').textContent = parseFloat(document.getElementById('lfoFreq').value).toFixed(
+            2);
+            document.getElementById('lfoDepthVal').textContent = parseFloat(document.getElementById('lfoDepth').value).toFixed(
+            2);
+        }
+
+        function updatePanDisplay() {
+            document.getElementById('panWidthVal').textContent = parseFloat(document.getElementById('panWidth').value).toFixed(
+            2);
+        }
+
+        function updateFilterDisplay() {
+            document.getElementById('filterCutoffVal').textContent = document.getElementById('filterCutoff').value;
+        }
+
+        function updateNoiseDisplay() {
+            document.getElementById('noiseVolumeVal').textContent = parseFloat(document.getElementById('noiseVolume').value)
+                .toFixed(2);
+        }
+
+        function updateTtsSpeedDisplay() {
+            document.getElementById('ttsSpeedVal').textContent = parseFloat(document.getElementById('ttsSpeed').value).toFixed(
+            2);
+        }
+
+        function updateSubliminalVolumeDisplay() {
+            document.getElementById('subliminalVolumeVal').textContent = document.getElementById('subliminalVolume').value;
+        }
+
+        function updateGuidedVoiceVolume() {
+            const v = document.getElementById('guidedVoiceVolume').value;
+            document.getElementById('guidedVoiceVolumeVal').textContent = v;
+        }
+
+        function updateGuidedVoiceSpeed() {
+            const v = parseFloat(document.getElementById('guidedVoiceSpeed').value);
+            document.getElementById('guidedVoiceSpeedVal').textContent = v.toFixed(2);
+        }
+
+        function updateDurationLabel() {
+            const d = parseInt(document.getElementById('duration').value);
+            const h = Math.floor(d / 3600);
+            const m = Math.floor((d % 3600) / 60);
+            const s = d % 60;
+            document.getElementById('durationVal').textContent =
+                h > 0 ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` :
+                `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+
+        function setDuration(sec) {
+            document.getElementById('duration').value = sec;
+            updateDurationLabel();
+        }
+
+        // ================================================================
+        //  MODO DE AUDIO
+        // ================================================================
+        function setAudioMode(mode) {
+            currentAudioMode = mode;
+            document.getElementById('btnIsochronic').classList.toggle('active', mode === 'isochronic');
+            document.getElementById('btnBinaural').classList.toggle('active', mode === 'binaural');
+            document.getElementById('btnGuided').classList.toggle('active', mode === 'guided');
+            const guidedSection = document.getElementById('guidedSection');
+            if (mode === 'guided') {
+                guidedSection.style.display = 'block';
+                const scriptArea = document.getElementById('guidedScript');
+                if (!scriptArea.value.trim()) {
+                    scriptArea.value =
+                        `Bienvenido a esta meditación guiada.\n\nInhala profundamente... 1, 2, 3, 4.\nMantén la respiración... 1, 2.\nExhala lentamente... 1, 2, 3, 4, 5, 6.\nSiente cómo tu cuerpo se relaja.\n\nContinúa respirando conscientemente.\nCada exhalación libera tensión.\n\nAl final de esta sesión, vuelve a la conciencia normal.`;
+                }
+            } else {
+                guidedSection.style.display = 'none';
+            }
+            toast(`Modo ${mode === 'isochronic' ? 'ISOCRÓNICO' : mode === 'binaural' ? 'BINAURAL' : 'GUIADA'} activado`, 'ok');
+        }
+
+        // ================================================================
+        //  SUBLIMINAL: PREVIEW CON SPEECH SYNTHESIS
+        // ================================================================
+        function previewSubliminal() {
+            const phrases = document.getElementById('subliminalPhrases').value.split('\n').filter(p => p.trim());
+            if (phrases.length === 0) { toast('Escribe al menos una frase', 'warning'); return; }
+            const utterance = new SpeechSynthesisUtterance(phrases[0]);
+            utterance.lang = document.getElementById('ttsLanguage').value || 'es';
+            utterance.rate = parseFloat(document.getElementById('ttsSpeed').value) || 1;
+            utterance.volume = 0.3;
+            // Intentar usar una voz en español
+            const voices = speechSynthesis.getVoices();
+            const esVoice = voices.find(v => v.lang.startsWith('es'));
+            if (esVoice) utterance.voice = esVoice;
+            speechSynthesis.speak(utterance);
+            toast('🔊 Reproduciendo frase subliminal', 'ok');
+        }
+
+        // ================================================================
+        //  AUDACITY LABELS
+        // ================================================================
+        function generateDefaultSegments(totalDuration, therapyType) {
+            const total = totalDuration;
+            if (therapyType === 'sleep') {
+                const intro = Math.min(180, total * 0.05);
+                const core = total * 0.85;
+                const outro = total - intro - core;
+                return [
+                    { name: '🌙 Inducción al sueño (ruido marrón)', duration: intro },
+                    { name: '💤 Sueño profundo (frecuencia objetivo)', duration: core },
+                    { name: '🌅 Despertar gradual (fade out)', duration: outro }
+                ];
+            } else if (therapyType === 'meditation') {
+                const intro = Math.min(90, total * 0.03);
+                const core = total * 0.80;
+                const outro = total - intro - core;
+                return [
+                    { name: '🧘 Preparación (silencio/ruido)', duration: intro },
+                    { name: '🌀 Frecuencia objetivo (núcleo meditativo)', duration: core },
+                    { name: '🔔 Regreso guiado', duration: outro }
+                ];
+            } else {
+                const gancho = Math.min(120, total * 0.03);
+                const inmersion = total * 0.25;
+                const nucleo = total * 0.50;
+                const cierre = total - gancho - inmersion - nucleo;
+                return [
+                    { name: '🎬 Gancho visual/auditivo', duration: gancho },
+                    { name: '🌊 Inmersión (ruido de fondo)', duration: inmersion },
+                    { name: '✨ Núcleo (frecuencia + capas)', duration: nucleo },
+                    { name: '🌙 Cierre y desvanecimiento', duration: cierre }
+                ];
+            }
+        }
+
+        function downloadAudacityLabels() {
+            const totalDuration = parseFloat(document.getElementById('duration').value);
+            const therapyType = document.getElementById('therapyType').value;
+            const customText = document.getElementById('customSegments').value.trim();
+            let segments = [];
+            if (customText) {
+                try {
+                    const parsed = JSON.parse(customText);
+                    if (Array.isArray(parsed) && parsed.length > 0) segments = parsed;
+                    else toast('Segmentos personalizados inválidos (array no vacío)', 'warning');
+                } catch (e) { toast('Error en JSON de segmentos', 'err'); return; }
+            }
+            if (segments.length === 0) {
+                segments = generateDefaultSegments(totalDuration, therapyType);
+            }
+
+            // Obtener frecuencias desde el primer oscilador
+            let lowFreq = 0;
+            let highFreq = 22050;
+            if (oscillators.length > 0) {
+                lowFreq = Math.round(oscillators[0].freq);
+                highFreq = Math.round(lowFreq * 8);
+                highFreq = Math.min(highFreq, 22050);
+            }
+
+            let lines = [];
+            let current = 0;
+            for (const seg of segments) {
+                const start = current;
+                const end = current + seg.duration;
+                const label = seg.name.replace(/[^a-zA-Z0-9 ]/g, '').trim() || 'Segmento';
+                lines.push(`${start.toFixed(3)}\t${end.toFixed(3)}\t${lowFreq}\t${highFreq}\t${label}`);
+                current = end;
+            }
+            const content = lines.join('\n');
+
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'audacity_labels.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 5000);
+            toast('✅ Marcas Audacity descargadas', 'ok');
+        }
+
+        // ================================================================
+        //  ENGINE: GENERACIÓN DE AUDIO CON WEB AUDIO API
+        // ================================================================
+
+        // --- Generación de ruido ---
+        function generateNoise(n, type) {
+            const buf = new Float32Array(n);
+            if (type === 'white') {
+                for (let i = 0; i < n; i++) buf[i] = (Math.random() * 2 - 1);
+            } else if (type === 'pink') {
+                let b0 = 0,
+                    b1 = 0,
+                    b2 = 0,
+                    b3 = 0,
+                    b4 = 0,
+                    b5 = 0;
+                for (let i = 0; i < n; i++) {
+                    const white = Math.random() * 2 - 1;
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    buf[i] = b0 + b1 + b2 + b3 + b4 + b5 + white * 0.5362;
+                    buf[i] *= 0.11;
+                }
+            } else { // brown
+                let last = 0;
+                for (let i = 0; i < n; i++) {
+                    const white = Math.random() * 2 - 1;
+                    last = (last + white * 0.02) * 0.99;
+                    buf[i] = last * 2.5;
+                }
+            }
+            // Normalizar
+            let max = 0;
+            for (let i = 0; i < n; i++) { if (Math.abs(buf[i]) > max) max = Math.abs(buf[i]); }
+            if (max > 0.001) { for (let i = 0; i < n; i++) buf[i] /= max; }
+            return buf;
+        }
+
+        // --- Síntesis de chunk ---
+        function synthesizeChunk(chunkStart, chunkDur, params, audioMode) {
+            const sr = 44100;
+            const n = Math.floor(chunkDur * sr);
+            const left = new Float32Array(n);
+            const right = new Float32Array(n);
+
+            // Parámetros
+            const oscs = params.oscillators || [{ freq: 440, wave: 'sine', volume: 0.3, panLeft: 0.5, panRight: 0.5,
+                fmFreq: 1, fmDepth: 0 }];
+            const adsr = params.adsr || { attack: 15, decay: 5, sustain: 0.68, release: 18 };
+            const lfo = params.lfo || { enabled: false, freq: 0.06, depth: 0.07, wave: 'sine' };
+            const filter = params.filter || { enabled: false, type: 'lowpass', cutoff: 650 };
+            const noise = params.noise || { enabled: true, type: 'pink', volume: 0.16 };
+            const panWidth = params.pan?.width || 0.7;
+            const masterVol = params.master_volume || 0.8;
+            const totalDur = params.total_duration || 600;
+
+            const t = new Float32Array(n);
+            for (let i = 0; i < n; i++) t[i] = chunkStart + i / sr;
+
+            // --- Generar cada oscilador ---
+            for (const osc of oscs) {
+                const freq = osc.freq || 440;
+                const wave = osc.wave || 'sine';
+                const vol = osc.volume || 0.25;
+                const panL = osc.panLeft !== undefined ? osc.panLeft : 0.5;
+                const panR = osc.panRight !== undefined ? osc.panRight : 0.5;
+                const fmFreq = osc.fmFreq || 1;
+                const fmDepth = osc.fmDepth || 0;
+
+                const sig = new Float32Array(n);
+                // Modulación FM
+                let phase = 0;
+                let fmPhase = 0;
+                for (let i = 0; i < n; i++) {
+                    const fm = fmDepth > 0 ? fmDepth * Math.sin(2 * Math.PI * fmFreq * t[i]) : 0;
+                    const freqMod = freq * (1 + fm);
+                    phase += 2 * Math.PI * freqMod / sr;
+                    phase = phase % (2 * Math.PI);
+                    let val = 0;
+                    switch (wave) {
+                        case 'sine':
+                            val = Math.sin(phase);
+                            break;
+                        case 'square':
+                            val = Math.sin(phase) >= 0 ? 1 : -1;
+                            break;
+                        case 'saw':
+                            val = (phase / Math.PI) - 1;
+                            break;
+                        case 'triangle':
+                            val = 1 - 4 * Math.abs(Math.round(phase / (2 * Math.PI) - 0.5) - (phase / (2 * Math.PI) - 0.5));
+                            break;
+                        default:
+                            val = Math.sin(phase);
+                    }
+                    sig[i] = val;
+                }
+
+                // Aplicar pan
+                const gainL = panL * 2;
+                const gainR = panR * 2;
+                for (let i = 0; i < n; i++) {
+                    left[i] += sig[i] * vol * gainL;
+                    right[i] += sig[i] * vol * gainR;
+                }
+            }
+
+            // --- ADSR ---
+            const attack = Math.max(adsr.attack || 15, 0.01);
+            const decay = Math.max(adsr.decay || 5, 0.01);
+            const sustain = adsr.sustain || 0.68;
+            const release = Math.max(adsr.release || 18, 0.01);
+
+            for (let i = 0; i < n; i++) {
+                const time = chunkStart + i / sr;
+                let env = 1;
+                if (time < attack) {
+                    env = time / attack;
+                } else if (time < attack + decay) {
+                    env = 1 - (1 - sustain) * ((time - attack) / decay);
+                } else if (time < totalDur - release) {
+                    env = sustain;
+                } else if (time < totalDur) {
+                    const releaseT = (time - (totalDur - release)) / release;
+                    env = sustain * (1 - Math.min(releaseT, 1));
+                } else {
+                    env = 0;
+                }
+                left[i] *= env;
+                right[i] *= env;
+            }
+
+            // --- LFO ---
+            if (lfo.enabled && lfo.depth > 0) {
+                const lfoFreq = lfo.freq || 0.06;
+                const lfoDepth = lfo.depth || 0.07;
+                const lfoWave = lfo.wave || 'sine';
+                for (let i = 0; i < n; i++) {
+                    let lfoVal = 0;
+                    switch (lfoWave) {
+                        case 'sine':
+                            lfoVal = Math.sin(2 * Math.PI * lfoFreq * t[i]);
+                            break;
+                        case 'triangle':
+                            lfoVal = 1 - 4 * Math.abs(Math.round(lfoFreq * t[i] - 0.5) - (lfoFreq * t[i] - 0.5));
+                            break;
+                        case 'square':
+                            lfoVal = Math.sin(2 * Math.PI * lfoFreq * t[i]) >= 0 ? 1 : -1;
+                            break;
+                        default:
+                            lfoVal = Math.sin(2 * Math.PI * lfoFreq * t[i]);
+                    }
+                    const mod = 1 + lfoVal * lfoDepth;
+                    left[i] *= mod;
+                    right[i] *= mod;
+                }
+            }
+
+            // --- Ancho estéreo ---
+            for (let i = 0; i < n; i++) {
+                left[i] *= panWidth;
+                right[i] *= panWidth;
+            }
+
+            // --- Ruido ---
+            if (noise.enabled) {
+                const noiseType = noise.type || 'pink';
+                const noiseVol = noise.volume || 0.16;
+                const noiseBuf = generateNoise(n, noiseType);
+                for (let i = 0; i < n; i++) {
+                    left[i] += noiseBuf[i] * noiseVol;
+                    right[i] += noiseBuf[i] * noiseVol * 0.95;
+                }
+            }
+
+            // --- Filtro (simulado con simple paso bajo) ---
+            if (filter.enabled) {
+                const cutoff = filter.cutoff || 650;
+                // Filtro simple de primer orden (IIR)
+                const alpha = Math.exp(-2 * Math.PI * cutoff / sr);
+                let lf = 0,
+                    rf = 0;
+                for (let i = 0; i < n; i++) {
+                    lf = left[i] + alpha * (lf - left[i]);
+                    rf = right[i] + alpha * (rf - right[i]);
+                    left[i] = lf;
+                    right[i] = rf;
+                }
+            }
+
+            // --- Master ---
+            for (let i = 0; i < n; i++) {
+                left[i] *= masterVol;
+                right[i] *= masterVol;
+            }
+
+            // Normalizar y combinar
+            let maxVal = 0;
+            for (let i = 0; i < n; i++) {
+                const a = Math.abs(left[i]),
+                    b = Math.abs(right[i]);
+                if (a > maxVal) maxVal = a;
+                if (b > maxVal) maxVal = b;
+            }
+            if (maxVal > 0.001) {
+                const gain = 0.94 / maxVal;
+                for (let i = 0; i < n; i++) { left[i] *= gain;
+                    right[i] *= gain; }
+            }
+
+            const stereo = new Float32Array(n * 2);
+            for (let i = 0; i < n; i++) {
+                stereo[i * 2] = left[i];
+                stereo[i * 2 + 1] = right[i];
+            }
+            return stereo;
+        }
+
+        // ================================================================
+        //  PREVIEW (10 segundos)
+        // ================================================================
+        async function previewAudio() {
+            if (isPlayingPreview) { toast('Ya hay un preview en curso', 'warning'); return; }
+            const btn = document.getElementById('previewBtn');
+            const statusMsg = document.getElementById('statusMsg');
+            btn.disabled = true;
+            btn.textContent = '🎧 Generando...';
+            statusMsg.textContent = '🎚️ Generando preview...';
+
+            const params = getCurrentParams();
+            const previewDur = 10;
+            const sr = 44100;
+            const totalSamples = previewDur * sr;
+
+            try {
+                // Usar OfflineAudioContext para generar el preview
+                const offlineCtx = new OfflineAudioContext(2, totalSamples, sr);
+                const buffer = offlineCtx.createBuffer(2, totalSamples, sr);
+
+                // Sintetizar chunk
+                const stereo = synthesizeChunk(0, previewDur, params, currentAudioMode === 'guided' ? 'isochronic' :
+                    currentAudioMode);
+
+                // Copiar al buffer
+                const ch0 = buffer.getChannelData(0);
+                const ch1 = buffer.getChannelData(1);
+                for (let i = 0; i < previewDur * sr; i++) {
+                    ch0[i] = stereo[i * 2] || 0;
+                    ch1[i] = stereo[i * 2 + 1] || 0;
+                }
+
+                // Reproducir
+                const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                const source = audioCtx.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioCtx.destination);
+                source.start();
+                isPlayingPreview = true;
+                btn.classList.add('preview-active');
+                statusMsg.textContent = '🎧 Reproduciendo preview (10s)';
+                toast('🔊 Preview', 'ok');
+
+                source.onended = () => {
+                    isPlayingPreview = false;
+                    btn.classList.remove('preview-active');
+                    statusMsg.textContent = '✅ Preview finalizado';
+                    setTimeout(() => { if (statusMsg.textContent.includes('Preview finalizado')) statusMsg.textContent =
+                            ''; }, 3000);
+                };
+                source.onerror = () => {
+                    isPlayingPreview = false;
+                    btn.classList.remove('preview-active');
+                    statusMsg.textContent = '❌ Error preview';
+                    toast('Error preview', 'err');
+                };
+            } catch (e) {
+                statusMsg.textContent = `❌ Error: ${e.message}`;
+                toast(`Error: ${e.message}`, 'err');
+                console.error(e);
+            }
+            btn.disabled = false;
+            btn.textContent = '🎧 PREVIEW (10 s)';
+        }
+
+        // ================================================================
+        //  RENDER COMPLETO -> WAV
+        // ================================================================
+        async function renderAudio() {
+            if (isRendering) { toast('Ya hay un render en curso', 'warning'); return; }
+            if (isPlayingPreview) { toast('Espera a que termine el preview', 'warning'); return; }
+
+            const btn = document.getElementById('renderBtn');
+            const progressFill = document.getElementById('progressFill');
+            const statusMsg = document.getElementById('statusMsg');
+            btn.disabled = true;
+            btn.textContent = '🔄 Renderizando...';
+            progressFill.style.width = '0%';
+            statusMsg.textContent = 'Iniciando renderizado...';
+            isRendering = true;
+
+            const params = getCurrentParams();
+            const totalDur = params.total_duration || 3600;
+            const sr = 44100;
+            const totalSamples = Math.floor(totalDur * sr);
+            const chunkDur = 5; // segundos por chunk
+            const numChunks = Math.ceil(totalDur / chunkDur);
+            const audioMode = currentAudioMode === 'guided' ? 'isochronic' : currentAudioMode;
+
+            try {
+                // Crear buffer
+                const offlineCtx = new OfflineAudioContext(2, totalSamples, sr);
+                const buffer = offlineCtx.createBuffer(2, totalSamples, sr);
+                const ch0 = buffer.getChannelData(0);
+                const ch1 = buffer.getChannelData(1);
+
+                let samplesWritten = 0;
+                for (let i = 0; i < numChunks; i++) {
+                    const chunkStart = i * chunkDur;
+                    const chunkDurActual = Math.min(chunkDur, totalDur - chunkStart);
+                    if (chunkDurActual <= 0) break;
+
+                    const stereo = synthesizeChunk(chunkStart, chunkDurActual, params, audioMode);
+                    const n = Math.floor(chunkDurActual * sr);
+                    const offset = i * chunkDur * sr;
+                    for (let j = 0; j < n && offset + j < totalSamples; j++) {
+                        ch0[offset + j] = stereo[j * 2] || 0;
+                        ch1[offset + j] = stereo[j * 2 + 1] || 0;
+                    }
+                    samplesWritten += n;
+
+                    const progress = Math.min(((i + 1) / numChunks) * 100, 100);
+                    progressFill.style.width = progress + '%';
+                    statusMsg.textContent = `🎚️ Renderizando... ${Math.round(progress)}% (chunk ${i+1}/${numChunks})`;
+
+                    // Dar tiempo para UI
+                    await new Promise(r => setTimeout(r, 10));
+                }
+
+                progressFill.style.width = '100%';
+                statusMsg.textContent = '✅ Renderizado completado. Preparando WAV...';
+
+                // Exportar WAV usando OfflineAudioContext
+                const renderer = offlineCtx;
+                // Necesitamos crear un nuevo contexto con el buffer
+                const exportCtx = new OfflineAudioContext(2, totalSamples, sr);
+                const src = exportCtx.createBufferSource();
+                src.buffer = buffer;
+                src.connect(exportCtx.destination);
+                src.start();
+                const renderedBuffer = await exportCtx.startRendering();
+
+                // Convertir a WAV
+                const wavBlob = bufferToWav(renderedBuffer);
+                const url = URL.createObjectURL(wavBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                const sessionName = document.getElementById('sessionName').value || 'Sesion';
+                const dateStr = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                a.download = `${sessionName}_${dateStr}.wav`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 10000);
+
+                const fileSize = (wavBlob.size / 1024 / 1024).toFixed(2);
+                const durMin = (totalDur / 60).toFixed(1);
+                statusMsg.innerHTML =
+                    `✅ Audio generado! (${durMin} min, ${fileSize} MB)<br><span style="font-size:0.6rem;color:var(--text-secondary);">Modo: ${currentAudioMode.toUpperCase()}</span>`;
+                toast('✅ Audio generado y descargado', 'ok');
+            } catch (e) {
+                statusMsg.textContent = `❌ Error: ${e.message}`;
+                toast(`Error: ${e.message}`, 'err');
+                console.error(e);
+                progressFill.style.width = '0%';
+            }
+
+            btn.disabled = false;
+            btn.textContent = '🎬 GENERAR WAV';
+            isRendering = false;
+        }
+
+        // ================================================================
+        //  WAV EXPORTER
+        // ================================================================
+        function bufferToWav(buffer) {
+            const numChannels = buffer.numberOfChannels;
+            const sampleRate = buffer.sampleRate;
+            const length = buffer.length;
+            const data = new Float32Array(length * numChannels);
+            for (let ch = 0; ch < numChannels; ch++) {
+                const chData = buffer.getChannelData(ch);
+                for (let i = 0; i < length; i++) {
+                    data[i * numChannels + ch] = chData[i];
+                }
+            }
+            // Convertir a 16-bit PCM
+            const pcmData = new Int16Array(data.length);
+            for (let i = 0; i < data.length; i++) {
+                const s = Math.max(-1, Math.min(1, data[i]));
+                pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+            }
+
+            const headerSize = 44;
+            const dataSize = pcmData.length * 2;
+            const fileSize = headerSize + dataSize;
+
+            const view = new DataView(new ArrayBuffer(fileSize));
+            // RIFF
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, fileSize - 8, true);
+            writeString(view, 8, 'WAVE');
+            // fmt
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * numChannels * 2, true);
+            view.setUint16(32, numChannels * 2, true);
+            view.setUint16(34, 16, true);
+            // data
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            // Copiar datos
+            const offset = 44;
+            for (let i = 0; i < pcmData.length; i++) {
+                view.setInt16(offset + i * 2, pcmData[i], true);
+            }
+
+            return new Blob([view.buffer], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, str) {
+            for (let i = 0; i < str.length; i++) {
+                view.setUint8(offset + i, str.charCodeAt(i));
+            }
+        }
+
+        // ================================================================
+        //  OBTENER PARÁMETROS ACTUALES
+        // ================================================================
+        function getCurrentParams() {
+            const subliminalEnabled = document.getElementById('subliminalEnabled').checked;
+            const subliminalPhrases = document.getElementById('subliminalPhrases').value.split('\n').filter(p => p.trim());
+            const guidedEnabled = currentAudioMode === 'guided';
+
+            const params = {
+                total_duration: parseFloat(document.getElementById('duration').value),
+                oscillators: oscillators.map(o => ({ ...o })),
+                adsr: {
+                    attack: parseFloat(document.getElementById('attack').value),
+                    decay: parseFloat(document.getElementById('decay').value),
+                    sustain: parseFloat(document.getElementById('sustain').value),
+                    release: parseFloat(document.getElementById('release').value)
+                },
+                lfo: {
+                    enabled: document.getElementById('lfoEnabled').checked,
+                    freq: parseFloat(document.getElementById('lfoFreq').value),
+                    depth: parseFloat(document.getElementById('lfoDepth').value),
+                    wave: document.getElementById('lfoWave').value
+                },
+                pan: {
+                    width: parseFloat(document.getElementById('panWidth').value)
+                },
+                filter: {
+                    enabled: document.getElementById('filterEnabled').checked,
+                    type: document.getElementById('filterType').value,
+                    cutoff: parseFloat(document.getElementById('filterCutoff').value)
+                },
+                noise: {
+                    enabled: document.getElementById('noiseEnabled').checked,
+                    type: document.getElementById('noiseType').value,
+                    volume: parseFloat(document.getElementById('noiseVolume').value)
+                },
+                subliminal: {
+                    enabled: subliminalEnabled,
+                    phrases: subliminalPhrases,
+                    voice: {
+                        language: document.getElementById('ttsLanguage').value,
+                        speed: parseFloat(document.getElementById('ttsSpeed').value),
+                        subliminal_db: parseFloat(document.getElementById('subliminalVolume').value)
+                    },
+                    mix: {
+                        volume_db: parseFloat(document.getElementById('subliminalVolume').value),
+                        repeat_interval_sec: parseFloat(document.getElementById('repeatInterval').value)
+                    }
+                },
+                guided: {
+                    enabled: guidedEnabled,
+                    script: guidedEnabled ? document.getElementById('guidedScript').value : '',
+                    voice: {
+                        language: 'es',
+                        speed: parseFloat(document.getElementById('guidedVoiceSpeed').value),
+                        voice: document.getElementById('guidedVoiceName').value
+                    },
+                    mix: {
+                        volume_db: parseFloat(document.getElementById('guidedVoiceVolume').value)
+                    }
+                },
+                master_volume: 0.8,
+                audio_mode: currentAudioMode
+            };
+            return params;
+        }
+
+        // ================================================================
+        //  INICIALIZACIÓN
+        // ================================================================
+        function init() {
+            renderOscillators();
+            updateADSRDisplay();
+            updateDurationLabel();
+            updateLFODisplay();
+            updatePanDisplay();
+            updateFilterDisplay();
+            updateNoiseDisplay();
+            updateTtsSpeedDisplay();
+            updateSubliminalVolumeDisplay();
+            updateGuidedVoiceVolume();
+            updateGuidedVoiceSpeed();
+            drawADSREnvelope();
+            setAudioMode('isochronic');
+
+            // Subliminal toggle
+            document.getElementById('subliminalEnabled').addEventListener('change', function(e) {
+                document.getElementById('subliminalConfig').style.display = e.target.checked ? 'block' : 'none';
+            });
+
+            // Cargar un preset por defecto (solfeggio 639)
+            setTimeout(() => {
+                document.getElementById('presetSelect').value = 'solfeggio_639';
+                loadPreset();
+            }, 100);
+
+            // Cargar voces TTS
+            speechSynthesis.getVoices();
+            speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+
+            toast('🧠 Neurowave Studio listo', 'ok');
+        }
+
+        // Iniciar
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
