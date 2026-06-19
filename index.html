@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroWave Studio Pro - Compact</title>
+    <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .container {
+            max-width: 1920px;
+            height: calc(100vh - 16px);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        header {
+            text-align: center;
+            padding: 8px;
+            background: var(--bg-card);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2px;
+        }
+
+        .subtitle { color: var(--text-secondary); font-size: 0.75rem; }
+
+        .specs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
+        .spec-badge {
+            background: var(--bg-hover);
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        .status-bar {
+            background: var(--bg-card);
+            border-radius: 6px;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px;
+        }
+
+        .status-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; }
+        .status-label { color: var(--text-secondary); }
+        .status-value { color: var(--accent); font-weight: 600; }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 6px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .card::-webkit-scrollbar { width: 4px; }
+        .card::-webkit-scrollbar-track { background: var(--bg-dark); }
+        .card::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-icon { font-size: 1rem; }
+        .card-title { font-size: 0.85rem; font-weight: 600; }
+
+        .form-group { margin-bottom: 8px; }
+
+        label {
+            display: block;
+            margin-bottom: 3px;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 5px 8px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.75rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: var(--bg-dark);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .range-value {
+            display: inline-block;
+            background: var(--bg-dark);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            color: var(--accent);
+            margin-left: 4px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
+        .btn-secondary { background: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .toggle-group { display: flex; gap: 4px; margin-bottom: 8px; }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 6px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .toggle-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+        .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 6px; }
+
+        .preset-btn {
+            padding: 8px 4px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-primary);
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .preset-btn:hover { background: var(--bg-hover); border-color: var(--primary); }
+        .preset-btn .freq { font-size: 0.9rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: 2px; }
+        .preset-btn .label { font-size: 0.65rem; color: var(--text-secondary); }
+
+        .visualizer {
+            width: 100%;
+            height: 80px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 4px;
+            padding: 6px;
+            margin-top: 6px;
+            color: var(--warning);
+            font-size: 0.65rem;
+        }
+
+        .info-box {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            padding: 6px;
+            margin-top: 6px;
+            color: var(--accent);
+            font-size: 0.65rem;
+        }
+
+        .lufs-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 4px;
+            padding: 6px;
+            margin-top: 6px;
+            color: var(--success);
+            font-size: 0.7rem;
+            display: none;
+        }
+
+        .lufs-box.active { display: block; }
+
+        .oscillator-item {
+            background: var(--bg-dark);
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .oscillator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .remove-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 3px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.65rem;
+        }
+
+        .full-width { grid-column: 1 / -1; }
+
+        h3 { margin-bottom: 6px; color: var(--text-secondary); font-size: 0.75rem; }
+        small { color: var(--text-secondary); font-size: 0.65rem; }
+        input[type="checkbox"] { margin-right: 4px; }
+
+        .progress-container {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .progress-container.active { display: block; }
+
+        .progress-bar {
+            width: 100%;
+            height: 16px;
+            background: var(--bg-hover);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .progress-status { color: var(--accent); font-weight: 600; }
+
+        /* EQ Bands */
+        .eq-bands {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .eq-band {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 6px 4px;
+            text-align: center;
+        }
+
+        .eq-band-label {
+            font-size: 0.65rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .eq-band input[type="range"] {
+            writing-mode: vertical-lr;
+            direction: rtl;
+            height: 60px;
+            width: 4px;
+            margin: 4px auto;
+        }
+
+        .eq-band-value {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .eq-toggle {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .format-select {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .format-btn {
+            flex: 1;
+            padding: 4px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.7rem;
+            text-align: center;
+        }
+
+        .format-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 NeuroWave Studio Pro</h1>
+            <p class="subtitle">Motor de síntesis terapéutica de alta precisión</p>
+            <div class="specs">
+                <span class="spec-badge">⚡ 44.1 kHz · 16-bit PCM</span>
+                <span class="spec-badge">🎧 Estéreo</span>
+                <span class="spec-badge">🔊 Isocrónico / Binaural</span>
+                <span class="spec-badge">📊 FFT en tiempo real</span>
+                <span class="spec-badge">🎚️ EQ 6 bandas</span>
+                <span class="spec-badge">📈 Medidor LUFS</span>
+            </div>
+        </header>
+
+        <div class="status-bar">
+            <div class="status-grid">
+                <div class="status-item">
+                    <span class="status-label">🔊 Tipo:</span>
+                    <span class="status-value" id="statusType">Isocrónico</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">🎯 Objetivo:</span>
+                    <span class="status-value" id="statusTarget">6.0 Hz</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">⏱️ Duración:</span>
+                    <span class="status-value" id="statusDuration">01:00:00</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">🎤 Voz:</span>
+                    <span class="status-value" id="statusVoice">Desactivada</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">📊 LUFS:</span>
+                    <span class="status-value" id="statusLUFS">—</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Configuración -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">⚙️</span>
+                    <h2 class="card-title">Configuración</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nombre sesión</label>
+                    <input type="text" id="sessionName" value="Sesion_Terapeutica">
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de tono</label>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-type="isochronic" onclick="setToneType('isochronic')">🔔 Isocrónico</button>
+                        <button class="toggle-btn" data-type="binaural" onclick="setToneType('binaural')">🎧 Binaural</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Frecuencia objetivo (Hz) <span class="range-value" id="targetFreqValue">6.0</span></label>
+                    <input type="range" id="targetFreq" min="0.5" max="40" step="0.1" value="6.0" oninput="updateTargetFreq()">
+                    <small>Δ:0.5-4 · Θ:4-8 · α:8-13 · β:13-30 · γ:30-40</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Duración</label>
+                    <select id="duration" onchange="updateDuration()">
+                        <option value="60">1 min (test)</option>
+                        <option value="300">5 min</option>
+                        <option value="600">10 min</option>
+                        <option value="1800">30 min</option>
+                        <option value="3600" selected>1 h</option>
+                        <option value="5400">90 min</option>
+                        <option value="7200">2 h</option>
+                        <option value="14400">4 h</option>
+                        <option value="28800">8 h</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Osciladores -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🎹</span>
+                    <h2 class="card-title">Osciladores</h2>
+                </div>
+
+                <div class="form-group">
+                    <label>Frecuencia base (Hz) <span class="range-value" id="baseFreqValue">432</span></label>
+                    <input type="range" id="baseFreq" min="100" max="1000" step="1" value="432" oninput="updateBaseFreq()">
+                </div>
+
+                <div class="form-group">
+                    <label>Forma de onda</label>
+                    <select id="waveform">
+                        <option value="sine">Seno</option>
+                        <option value="triangle">Triángulo</option>
+                        <option value="square">Cuadrada</option>
+                        <option value="sawtooth">Sierra</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Volumen (dB) <span class="range-value" id="mainVolValue">-6</span></label>
+                    <input type="range" id="mainVol" min="-40" max="0" step="1" value="-6" oninput="updateMainVol()">
+                </div>
+
+                <div id="oscillatorsList"></div>
+
+                <button class="btn btn-secondary" onclick="addOscillator()" style="width: 100%; margin-top: 6px;">➕ Añadir</button>
+            </div>
+
+            <!-- Síntesis -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🎛️</span>
+                    <h2 class="card-title">Síntesis</h2>
+                </div>
+
+                <h3>ADSR</h3>
+                
+                <div class="form-group">
+                    <label>Ataque (s) <span class="range-value" id="attackValue">15.0</span></label>
+                    <input type="range" id="attack" min="0" max="60" step="0.1" value="15" oninput="updateADSR()">
+                </div>
+
+                <div class="form-group">
+                    <label>Decaimiento (s) <span class="range-value" id="decayValue">5.0</span></label>
+                    <input type="range" id="decay" min="0" max="30" step="0.1" value="5" oninput="updateADSR()">
+                </div>
+
+                <div class="form-group">
+                    <label>Sostenido <span class="range-value" id="sustainValue">0.68</span></label>
+                    <input type="range" id="sustain" min="0" max="1" step="0.01" value="0.68" oninput="updateADSR()">
+                </div>
+
+                <div class="form-group">
+                    <label>Liberación (s) <span class="range-value" id="releaseValue">18.0</span></label>
+                    <input type="range" id="release" min="0" max="60" step="0.1" value="18" oninput="updateADSR()">
+                </div>
+
+                <h3 style="margin-top: 8px;">LFO</h3>
+                
+                <div class="form-group">
+                    <label><input type="checkbox" id="lfoEnabled" onchange="updateLFO()"> Activar</label>
+                </div>
+
+                <div class="form-group">
+                    <label>Forma</label>
+                    <select id="lfoWaveform" onchange="updateLFO()">
+                        <option value="sine">Seno</option>
+                        <option value="triangle">Triángulo</option>
+                        <option value="square">Cuadrada</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Frecuencia (Hz) <span class="range-value" id="lfoFreqValue">0.06</span></label>
+                    <input type="range" id="lfoFreq" min="0.01" max="10" step="0.01" value="0.06" oninput="updateLFO()">
+                </div>
+
+                <div class="form-group">
+                    <label>Profundidad <span class="range-value" id="lfoDepthValue">0.07</span></label>
+                    <input type="range" id="lfoDepth" min="0" max="1" step="0.01" value="0.07" oninput="updateLFO()">
+                </div>
+            </div>
+
+            <!-- Procesamiento (Filtro + EQ) -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔊</span>
+                    <h2 class="card-title">Procesamiento</h2>
+                </div>
+
+                <h3>Filtro</h3>
+                
+                <div class="form-group">
+                    <label><input type="checkbox" id="filterEnabled" onchange="updateFilter()"> Activar</label>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select id="filterType" onchange="updateFilter()">
+                        <option value="lowpass">Paso bajo</option>
+                        <option value="highpass">Paso alto</option>
+                        <option value="bandpass">Paso banda</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Corte (Hz) <span class="range-value" id="filterFreqValue">650</span></label>
+                    <input type="range" id="filterFreq" min="20" max="20000" step="10" value="650" oninput="updateFilter()">
+                </div>
+
+                <h3 style="margin-top: 8px;">🎚️ EQ Paramétrico 6 Bandas</h3>
+                
+                <div class="eq-toggle">
+                    <input type="checkbox" id="eqEnabled" onchange="updateEQ()">
+                    <label style="margin: 0;">Activar EQ</label>
+                </div>
+
+                <div class="eq-bands" id="eqBands"></div>
+
+                <h3 style="margin-top: 8px;">🌊 Ruido</h3>
+                
+                <div class="form-group">
+                    <label><input type="checkbox" id="noiseEnabled" onchange="updateNoise()"> Activar</label>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select id="noiseType" onchange="updateNoise()">
+                        <option value="pink">Rosa</option>
+                        <option value="brown">Marrón</option>
+                        <option value="white">Blanco</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Volumen <span class="range-value" id="noiseVolValue">0.16</span></label>
+                    <input type="range" id="noiseVol" min="0" max="1" step="0.01" value="0.16" oninput="updateNoise()">
+                </div>
+
+                <div class="form-group">
+                    <label>Estéreo <span class="range-value" id="stereoWidthValue">0.70</span></label>
+                    <input type="range" id="stereoWidth" min="0" max="1" step="0.01" value="0.70" oninput="updateStereoWidth()">
+                </div>
+            </div>
+
+            <!-- Voz Guiada -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🎙️</span>
+                    <h2 class="card-title">Voz Guiada</h2>
+                </div>
+
+                <div class="form-group">
+                    <label><input type="checkbox" id="voiceEnabled" onchange="updateVoice()"> Incluir voz</label>
+                </div>
+
+                <div class="form-group">
+                    <label>Guion (1 frase/línea)</label>
+                    <textarea id="voiceScript" rows="4" placeholder="Frases de guía..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Volumen (dB) <span class="range-value" id="voiceVolValue">-6</span></label>
+                    <input type="range" id="voiceVol" min="-20" max="0" step="1" value="-6" oninput="updateVoice()">
+                </div>
+
+                <div class="form-group">
+                    <label>Velocidad <span class="range-value" id="voiceSpeedValue">0.90</span></label>
+                    <input type="range" id="voiceSpeed" min="0.5" max="2" step="0.05" value="0.90" oninput="updateVoice()">
+                </div>
+
+                <div class="form-group">
+                    <label>Voz</label>
+                    <select id="voiceSelect">
+                        <option value="es-ES-ElviraNeural">Elvira (ES, fem.)</option>
+                        <option value="es-ES-AlvaroNeural">Álvaro (ES, masc.)</option>
+                        <option value="es-MX-DaliaNeural">Dalia (MX, fem.)</option>
+                        <option value="es-MX-JorgeNeural">Jorge (MX, masc.)</option>
+                        <option value="en-US-JennyNeural">Jenny (US, fem.)</option>
+                        <option value="en-US-GuyNeural">Guy (US, masc.)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Generación con FFT -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🎬</span>
+                    <h2 class="card-title">Generación</h2>
+                </div>
+
+                <h3>📊 Analizador FFT en tiempo real</h3>
+                <canvas id="visualizer" class="visualizer"></canvas>
+                
+                <div class="format-select">
+                    <button class="format-btn active" data-format="wav" onclick="setFormat('wav')">WAV (sin pérdida)</button>
+                    <button class="format-btn" data-format="mp3" onclick="setFormat('mp3')">MP3 (320 kbps)</button>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" id="previewBtn" onclick="previewAudio()">🎧 Preview</button>
+                    <button class="btn btn-primary" id="generateBtn" onclick="generateAudio()">🎬 Generar</button>
+                    <button class="btn btn-danger" id="stopBtn" onclick="stopAudio()">⏹️ Stop</button>
+                </div>
+
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-info">
+                        <span class="progress-status" id="progressStatus">Inicializando...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span id="progressDetail">Preparando...</span>
+                        <span id="progressETA"></span>
+                    </div>
+                </div>
+
+                <div class="lufs-box" id="lufsBox">
+                    <strong>📈 Análisis de Loudness (EBU R128):</strong><br>
+                    LUFS Integrado: <span id="lufsIntegrated">—</span> · 
+                    Pico: <span id="lufsPeak">—</span> · 
+                    Rango Dinámico: <span id="lufsRange">—</span>
+                </div>
+
+                <div class="info-box" style="margin-top: 6px;">
+                    <strong>ℹ️</strong> FFT: 2048 puntos · EQ: peaking filters · LUFS: K-weighting simplificado
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️</strong> No reemplaza tratamiento médico.
+                </div>
+            </div>
+
+            <!-- Presets -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="card-icon">💊</span>
+                    <h2 class="card-title">Presets Terapéuticos</h2>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px;">
+                    <button class="preset-btn" onclick="loadPreset('delta')">
+                        <span class="freq">2.0 Hz</span>
+                        <span class="label">Delta · Sueño</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('theta')">
+                        <span class="freq">6.0 Hz</span>
+                        <span class="label">Theta · Meditación</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('alpha')">
+                        <span class="freq">10.0 Hz</span>
+                        <span class="label">Alpha · Relajación</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('beta')">
+                        <span class="freq">18.0 Hz</span>
+                        <span class="label">Beta · Concentración</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('gamma')">
+                        <span class="freq">35.0 Hz</span>
+                        <span class="label">Gamma · Enfoque</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('solfeggio528')">
+                        <span class="freq">528 Hz</span>
+                        <span class="label">Solfeggio · Amor</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('solfeggio432')">
+                        <span class="freq">432 Hz</span>
+                        <span class="label">Verdi · Natural</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('schumann')">
+                        <span class="freq">7.83 Hz</span>
+                        <span class="label">Schumann · Tierra</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('sleep')">
+                        <span class="freq">Rampa</span>
+                        <span class="label">Insomnio</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('focus')">
+                        <span class="freq">15+40 Hz</span>
+                        <span class="label">Deep Work</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            toneType: 'isochronic',
+            targetFreq: 6.0,
+            baseFreq: 432,
+            waveform: 'sine',
+            mainVol: -6,
+            duration: 3600,
+            attack: 15,
+            decay: 5,
+            sustain: 0.68,
+            release: 18,
+            lfo: { enabled: false, waveform: 'sine', freq: 0.06, depth: 0.07 },
+            filter: { enabled: false, type: 'lowpass', freq: 650 },
+            eq: {
+                enabled: false,
+                bands: [
+                    { freq: 60, gain: 0, Q: 1.0 },
+                    { freq: 170, gain: 0, Q: 1.0 },
+                    { freq: 350, gain: 0, Q: 1.0 },
+                    { freq: 1000, gain: 0, Q: 1.0 },
+                    { freq: 3500, gain: 0, Q: 1.0 },
+                    { freq: 10000, gain: 0, Q: 1.0 }
+                ]
+            },
+            noise: { enabled: false, type: 'pink', vol: 0.16 },
+            stereoWidth: 0.70,
+            voice: { enabled: false, script: '', vol: -6, speed: 0.90, voice: 'es-ES-ElviraNeural' },
+            oscillators: [],
+            audioContext: null,
+            isPlaying: false,
+            isRendering: false,
+            outputFormat: 'wav',
+            analyser: null,
+            fftAnimId: null
+        };
+
+        const SAMPLE_RATE = 44100;
+        const CHANNELS = 2;
+
+        // ============ INICIALIZACIÓN ============
+        
+        function init() {
+            renderEQBands();
+            updateAllDisplays();
+            drawVisualizerIdle();
+        }
+
+        function renderEQBands() {
+            const container = document.getElementById('eqBands');
+            container.innerHTML = state.eq.bands.map((band, i) => `
+                <div class="eq-band">
+                    <div class="eq-band-label">${band.freq >= 1000 ? (band.freq/1000)+'k' : band.freq}Hz</div>
+                    <input type="range" min="-12" max="12" step="0.5" value="${band.gain}" 
+                           oninput="updateEQBand(${i}, 'gain', this.value)">
+                    <div class="eq-band-value" id="eqBandValue${i}">${band.gain > 0 ? '+' : ''}${band.gain}dB</div>
+                </div>
+            `).join('');
+        }
+
+        // ============ UPDATES ============
+        
+        function setToneType(type) {
+            state.toneType = type;
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === type);
+            });
+            document.getElementById('statusType').textContent = type === 'isochronic' ? 'Isocrónico' : 'Binaural';
+        }
+
+        function updateTargetFreq() {
+            const value = parseFloat(document.getElementById('targetFreq').value);
+            state.targetFreq = value;
+            document.getElementById('targetFreqValue').textContent = value.toFixed(1);
+            document.getElementById('statusTarget').textContent = value.toFixed(1) + ' Hz';
+        }
+
+        function updateBaseFreq() {
+            const value = parseFloat(document.getElementById('baseFreq').value);
+            state.baseFreq = value;
+            document.getElementById('baseFreqValue').textContent = value.toFixed(0);
+        }
+
+        function updateMainVol() {
+            const value = parseInt(document.getElementById('mainVol').value);
+            state.mainVol = value;
+            document.getElementById('mainVolValue').textContent = value;
+        }
+
+        function updateDuration() {
+            const value = parseInt(document.getElementById('duration').value);
+            state.duration = value;
+            const hours = Math.floor(value / 3600);
+            const minutes = Math.floor((value % 3600) / 60);
+            const seconds = value % 60;
+            document.getElementById('statusDuration').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateADSR() {
+            state.attack = parseFloat(document.getElementById('attack').value);
+            state.decay = parseFloat(document.getElementById('decay').value);
+            state.sustain = parseFloat(document.getElementById('sustain').value);
+            state.release = parseFloat(document.getElementById('release').value);
+            
+            document.getElementById('attackValue').textContent = state.attack.toFixed(1);
+            document.getElementById('decayValue').textContent = state.decay.toFixed(1);
+            document.getElementById('sustainValue').textContent = state.sustain.toFixed(2);
+            document.getElementById('releaseValue').textContent = state.release.toFixed(1);
+        }
+
+        function updateLFO() {
+            state.lfo.enabled = document.getElementById('lfoEnabled').checked;
+            state.lfo.waveform = document.getElementById('lfoWaveform').value;
+            state.lfo.freq = parseFloat(document.getElementById('lfoFreq').value);
+            state.lfo.depth = parseFloat(document.getElementById('lfoDepth').value);
+            
+            document.getElementById('lfoFreqValue').textContent = state.lfo.freq.toFixed(2);
+            document.getElementById('lfoDepthValue').textContent = state.lfo.depth.toFixed(2);
+        }
+
+        function updateFilter() {
+            state.filter.enabled = document.getElementById('filterEnabled').checked;
+            state.filter.type = document.getElementById('filterType').value;
+            state.filter.freq = parseFloat(document.getElementById('filterFreq').value);
+            document.getElementById('filterFreqValue').textContent = state.filter.freq.toFixed(0);
+        }
+
+        function updateEQ() {
+            state.eq.enabled = document.getElementById('eqEnabled').checked;
+        }
+
+        function updateEQBand(index, prop, value) {
+            state.eq.bands[index][prop] = parseFloat(value);
+            document.getElementById(`eqBandValue${index}`).textContent = 
+                `${value > 0 ? '+' : ''}${parseFloat(value).toFixed(1)}dB`;
+        }
+
+        function updateNoise() {
+            state.noise.enabled = document.getElementById('noiseEnabled').checked;
+            state.noise.type = document.getElementById('noiseType').value;
+            state.noise.vol = parseFloat(document.getElementById('noiseVol').value);
+            document.getElementById('noiseVolValue').textContent = state.noise.vol.toFixed(2);
+        }
+
+        function updateStereoWidth() {
+            state.stereoWidth = parseFloat(document.getElementById('stereoWidth').value);
+            document.getElementById('stereoWidthValue').textContent = state.stereoWidth.toFixed(2);
+        }
+
+        function updateVoice() {
+            state.voice.enabled = document.getElementById('voiceEnabled').checked;
+            state.voice.script = document.getElementById('voiceScript').value;
+            state.voice.vol = parseInt(document.getElementById('voiceVol').value);
+            state.voice.speed = parseFloat(document.getElementById('voiceSpeed').value);
+            state.voice.voice = document.getElementById('voiceSelect').value;
+            
+            document.getElementById('voiceVolValue').textContent = state.voice.vol;
+            document.getElementById('voiceSpeedValue').textContent = state.voice.speed.toFixed(2);
+            document.getElementById('statusVoice').textContent = state.voice.enabled ? 'Activada' : 'Desactivada';
+        }
+
+        function setFormat(format) {
+            state.outputFormat = format;
+            document.querySelectorAll('.format-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.format === format);
+            });
+        }
+
+        function updateAllDisplays() {
+            updateTargetFreq(); updateBaseFreq(); updateMainVol(); updateDuration();
+            updateADSR(); updateLFO(); updateFilter(); updateNoise(); updateStereoWidth(); updateVoice();
+        }
+
+        // ============ PRESETS ============
+        
+        function loadPreset(type) {
+            const presets = {
+                delta: { targetFreq: 2.0, baseFreq: 432, duration: 7200 },
+                theta: { targetFreq: 6.0, baseFreq: 432, duration: 3600 },
+                alpha: { targetFreq: 10.0, baseFreq: 440, duration: 1800 },
+                beta: { targetFreq: 18.0, baseFreq: 440, duration: 1800 },
+                gamma: { targetFreq: 35.0, baseFreq: 440, duration: 900 },
+                solfeggio528: { targetFreq: 0, baseFreq: 528, duration: 1800, toneType: 'isochronic' },
+                solfeggio432: { targetFreq: 0, baseFreq: 432, duration: 1800, toneType: 'isochronic' },
+                schumann: { targetFreq: 7.83, baseFreq: 432, duration: 3600 },
+                sleep: { targetFreq: 2.0, baseFreq: 432, duration: 7200 },
+                focus: { targetFreq: 15.0, baseFreq: 440, duration: 1800 }
+            };
+            const preset = presets[type];
+            if (!preset) return;
+            
+            if (preset.toneType) setToneType(preset.toneType);
+            document.getElementById('targetFreq').value = preset.targetFreq || state.targetFreq;
+            document.getElementById('baseFreq').value = preset.baseFreq;
+            document.getElementById('duration').value = preset.duration;
+            updateAllDisplays();
+        }
+
+        // ============ OSCILADORES ============
+        
+        function addOscillator() {
+            state.oscillators.push({ id: Date.now(), freq: 432, waveform: 'sine', vol: -12 });
+            renderOscillators();
+        }
+
+        function removeOscillator(id) {
+            state.oscillators = state.oscillators.filter(osc => osc.id !== id);
+            renderOscillators();
+        }
+
+        function renderOscillators() {
+            const container = document.getElementById('oscillatorsList');
+            container.innerHTML = state.oscillators.map((osc, idx) => `
+                <div class="oscillator-item">
+                    <div class="oscillator-header">
+                        <strong style="font-size: 0.7rem;">OSC ${idx + 2}</strong>
+                        <button class="remove-btn" onclick="removeOscillator(${osc.id})">🗑️</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Freq (Hz)</label>
+                        <input type="number" value="${osc.freq}" min="20" max="20000" step="1" 
+                               onchange="updateOscillator(${osc.id}, 'freq', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Forma</label>
+                        <select onchange="updateOscillator(${osc.id}, 'waveform', this.value)">
+                            <option value="sine" ${osc.waveform === 'sine' ? 'selected' : ''}>Seno</option>
+                            <option value="triangle" ${osc.waveform === 'triangle' ? 'selected' : ''}>Triángulo</option>
+                            <option value="square" ${osc.waveform === 'square' ? 'selected' : ''}>Cuadrada</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Vol (dB)</label>
+                        <input type="number" value="${osc.vol}" min="-40" max="0" step="1"
+                               onchange="updateOscillator(${osc.id}, 'vol', this.value)">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateOscillator(id, prop, value) {
+            const osc = state.oscillators.find(o => o.id === id);
+            if (osc) osc[prop] = prop === 'freq' || prop === 'vol' ? parseFloat(value) : value;
+        }
+
+        function dbToLinear(db) { return Math.pow(10, db / 20); }
+
+        // ============ GRAFO DE AUDIO ============
+        
+        function buildAudioGraph(ctx, duration, startTime = 0, destination = null) {
+            const masterGain = ctx.createGain();
+            masterGain.gain.value = 1;
+            
+            const finalDest = destination || ctx.destination;
+
+            // Tono principal
+            if (state.toneType === 'isochronic') {
+                buildIsochronic(ctx, state.baseFreq, state.targetFreq, duration, startTime, masterGain);
+            } else if (state.targetFreq > 0) {
+                buildBinaural(ctx, state.baseFreq, state.targetFreq, duration, startTime, masterGain);
+            } else {
+                // Tono puro (Solfeggio)
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = state.waveform;
+                osc.frequency.value = state.baseFreq;
+                g.gain.value = dbToLinear(state.mainVol);
+                osc.connect(g);
+                g.connect(masterGain);
+                osc.start(startTime);
+                osc.stop(startTime + duration);
+            }
+
+            // Osciladores adicionales
+            state.oscillators.forEach(osc => {
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.type = osc.waveform;
+                o.frequency.value = osc.freq;
+                g.gain.value = dbToLinear(osc.vol);
+                o.connect(g);
+                g.connect(masterGain);
+                o.start(startTime);
+                o.stop(startTime + duration);
+            });
+
+            // Ruido terapéutico
+            if (state.noise.enabled) {
+                buildNoise(ctx, state.noise.type, duration, startTime, masterGain);
+            }
+
+            // EQ Paramétrico
+            let currentNode = masterGain;
+            if (state.eq.enabled) {
+                const eqChain = buildEQ(ctx, startTime, duration);
+                masterGain.connect(eqChain.input);
+                currentNode = eqChain.output;
+            }
+
+            // Filtro
+            if (state.filter.enabled) {
+                const filter = ctx.createBiquadFilter();
+                filter.type = state.filter.type;
+                filter.frequency.value = state.filter.freq;
+                currentNode.connect(filter);
+                currentNode = filter;
+            }
+
+            // ADSR
+            applyADSRToNode(ctx, masterGain.gain, duration, startTime);
+
+            // LFO
+            if (state.lfo.enabled) {
+                const lfo = ctx.createOscillator();
+                const lfoGain = ctx.createGain();
+                lfo.type = state.lfo.waveform;
+                lfo.frequency.value = state.lfo.freq;
+                lfoGain.gain.value = state.lfo.depth;
+                lfo.connect(lfoGain);
+                lfoGain.connect(masterGain.gain);
+                lfo.start(startTime);
+                lfo.stop(startTime + duration);
+            }
+
+            currentNode.connect(finalDest);
+            
+            return { masterGain, output: currentNode };
+        }
+
+        function buildEQ(ctx, startTime, duration) {
+            const filters = state.eq.bands.map((band, i) => {
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'peaking';
+                filter.frequency.value = band.freq;
+                filter.Q.value = band.Q;
+                filter.gain.value = band.gain;
+                return filter;
+            });
+
+            for (let i = 0; i < filters.length - 1; i++) {
+                filters[i].connect(filters[i + 1]);
+            }
+
+            return {
+                input: filters[0],
+                output: filters[filters.length - 1]
+            };
+        }
+
+        function buildIsochronic(ctx, baseFreq, targetFreq, duration, startTime, destination) {
+            const osc = ctx.createOscillator();
+            const toneGain = ctx.createGain();
+            const pulseGain = ctx.createGain();
+
+            osc.type = state.waveform;
+            osc.frequency.value = baseFreq;
+            toneGain.gain.value = dbToLinear(state.mainVol);
+            pulseGain.gain.value = 0;
+
+            if (targetFreq <= 0) {
+                pulseGain.gain.value = 1;
+                osc.connect(toneGain);
+                toneGain.connect(pulseGain);
+                pulseGain.connect(destination);
+                osc.start(startTime);
+                osc.stop(startTime + duration);
+                return;
+            }
+
+            const pulseInterval = 1 / targetFreq;
+            const totalPulses = Math.floor(duration * targetFreq);
+
+            for (let i = 0; i < totalPulses; i++) {
+                const t = startTime + i * pulseInterval;
+                const attack = pulseInterval * 0.1;
+                const hold = pulseInterval * 0.4;
+                const release = pulseInterval * 0.4;
+                
+                pulseGain.gain.setValueAtTime(0, t);
+                pulseGain.gain.linearRampToValueAtTime(1, t + attack);
+                pulseGain.gain.setValueAtTime(1, t + attack + hold);
+                pulseGain.gain.linearRampToValueAtTime(0, t + attack + hold + release);
+            }
+
+            osc.connect(toneGain);
+            toneGain.connect(pulseGain);
+            pulseGain.connect(destination);
+
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        }
+
+        function buildBinaural(ctx, baseFreq, targetFreq, duration, startTime, destination) {
+            const merger = ctx.createChannelMerger(2);
+            const oscL = ctx.createOscillator();
+            const oscR = ctx.createOscillator();
+            const gainL = ctx.createGain();
+            const gainR = ctx.createGain();
+
+            oscL.type = state.waveform;
+            oscR.type = state.waveform;
+            oscL.frequency.value = baseFreq;
+            oscR.frequency.value = baseFreq + targetFreq;
+            
+            const linVol = dbToLinear(state.mainVol);
+            gainL.gain.value = linVol;
+            gainR.gain.value = linVol;
+
+            oscL.connect(gainL);
+            oscR.connect(gainR);
+            gainL.connect(merger, 0, 0);
+            gainR.connect(merger, 0, 1);
+            merger.connect(destination);
+
+            oscL.start(startTime);
+            oscR.start(startTime);
+            oscL.stop(startTime + duration);
+            oscR.stop(startTime + duration);
+        }
+
+        function buildNoise(ctx, type, duration, startTime, destination) {
+            const bufferSize = Math.floor(ctx.sampleRate * duration);
+            const buffer = ctx.createBuffer(CHANNELS, bufferSize, ctx.sampleRate);
+            const width = state.stereoWidth;
+
+            for (let ch = 0; ch < CHANNELS; ch++) {
+                const data = buffer.getChannelData(ch);
+                let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                let brown = 0;
+                
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    let sample;
+                    
+                    if (type === 'pink') {
+                        b0 = 0.99886 * b0 + white * 0.0555179;
+                        b1 = 0.99332 * b1 + white * 0.0750759;
+                        b2 = 0.96900 * b2 + white * 0.1538520;
+                        b3 = 0.86650 * b3 + white * 0.3104856;
+                        b4 = 0.55000 * b4 + white * 0.5329522;
+                        b5 = -0.7616 * b5 - white * 0.0168980;
+                        sample = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+                        b6 = white * 0.115926;
+                    } else if (type === 'brown') {
+                        brown = (brown + (0.02 * white)) / 1.02;
+                        sample = brown * 3.5;
+                    } else {
+                        sample = white;
+                    }
+                    
+                    data[i] = sample * (1 + (Math.random() * 2 - 1) * width * 0.3);
+                }
+            }
+
+            const source = ctx.createBufferSource();
+            const gain = ctx.createGain();
+            source.buffer = buffer;
+            gain.gain.value = state.noise.vol;
+            source.connect(gain);
+            gain.connect(destination);
+            source.start(startTime);
+        }
+
+        function applyADSRToNode(ctx, param, duration, startTime) {
+            const a = Math.min(state.attack, duration * 0.4);
+            const d = Math.min(state.decay, duration * 0.2);
+            const r = Math.min(state.release, duration * 0.4);
+            const s = state.sustain;
+
+            param.cancelScheduledValues(startTime);
+            param.setValueAtTime(0, startTime);
+            param.linearRampToValueAtTime(1, startTime + a);
+            param.linearRampToValueAtTime(s, startTime + a + d);
+            param.setValueAtTime(s, startTime + duration - r);
+            param.linearRampToValueAtTime(0, startTime + duration);
+        }
+
+        // ============ RENDERIZADO POR CHUNKS ============
+        
+        async function renderChunked(totalDuration, onProgress) {
+            const CHUNK_SECONDS = 60;
+            const totalChunks = Math.ceil(totalDuration / CHUNK_SECONDS);
+            const allBuffers = [];
+            const startTime = performance.now();
+
+            for (let i = 0; i < totalChunks; i++) {
+                if (!state.isRendering) throw new Error('CANCELLED');
+                
+                const chunkDuration = Math.min(CHUNK_SECONDS, totalDuration - i * CHUNK_SECONDS);
+                const chunkCtx = new OfflineAudioContext(CHANNELS, Math.ceil(chunkDuration * SAMPLE_RATE), SAMPLE_RATE);
+                
+                buildAudioGraph(chunkCtx, chunkDuration, 0);
+                
+                const chunkBuffer = await chunkCtx.startRendering();
+                allBuffers.push(chunkBuffer);
+                
+                const progress = ((i + 1) / totalChunks) * 100;
+                const elapsed = (performance.now() - startTime) / 1000;
+                const eta = (elapsed / (i + 1)) * (totalChunks - i - 1);
+                
+                onProgress({
+                    percent: progress,
+                    chunk: i + 1,
+                    totalChunks,
+                    elapsed,
+                    eta
+                });
+                
+                await new Promise(r => setTimeout(r, 0));
+            }
+
+            return mergeBuffers(allBuffers);
+        }
+
+        function mergeBuffers(buffers) {
+            let totalLength = 0;
+            buffers.forEach(b => totalLength += b.length);
+            
+            const merged = new AudioBuffer({
+                length: totalLength,
+                numberOfChannels: CHANNELS,
+                sampleRate: SAMPLE_RATE
+            });
+
+            let offset = 0;
+            buffers.forEach(buffer => {
+                for (let ch = 0; ch < CHANNELS; ch++) {
+                    merged.getChannelData(ch).set(buffer.getChannelData(ch), offset);
+                }
+                offset += buffer.length;
+            });
+
+            return merged;
+        }
+
+        // ============ MEDIDOR LUFS (EBU R128 simplificado) ============
+        
+        function calculateLUFS(buffer) {
+            const sampleRate = buffer.sampleRate;
+            const length = buffer.length;
+            const channels = [];
+            for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+                channels.push(buffer.getChannelData(ch));
+            }
+
+            // K-weighting filter (simplificado - high shelf + high pass)
+            // Pre-filter (high shelf +4dB above 1.5kHz)
+            const b0 = 1.53512485958697;
+            const b1 = -2.69169618940638;
+            const b2 = 1.19839281085285;
+            const a1 = -1.69065929318241;
+            const a2 = 0.73248077421585;
+
+            // High-pass filter at 80Hz
+            const hp_b0 = 1.0;
+            const hp_b1 = -2.0;
+            const hp_b2 = 1.0;
+            const hp_a1 = -1.99004745483398;
+            const hp_a2 = 0.99007225036621;
+
+            let peak = 0;
+            let sumSquares = 0;
+            let count = 0;
+
+            for (let ch = 0; ch < channels.length; ch++) {
+                const data = channels[ch];
+                let z1 = 0, z2 = 0;
+                let hp_z1 = 0, hp_z2 = 0;
+
+                for (let i = 0; i < length; i++) {
+                    const x = data[i];
+                    if (Math.abs(x) > peak) peak = Math.abs(x);
+
+                    // High shelf
+                    const y = b0 * x + b1 * z1 + b2 * z2 - a1 * z1 - a2 * z2;
+                    z2 = z1;
+                    z1 = x;
+
+                    // High pass
+                    const hp_y = hp_b0 * y + hp_b1 * hp_z1 + hp_b2 * hp_z2 - hp_a1 * hp_z1 - hp_a2 * hp_z2;
+                    hp_z2 = hp_z1;
+                    hp_z1 = y;
+
+                    sumSquares += hp_y * hp_y;
+                    count++;
+                }
+            }
+
+            const meanSquare = sumSquares / count;
+            const lufs = -0.691 + 10 * Math.log10(meanSquare + 1e-20);
+            const peakDb = 20 * Math.log10(peak + 1e-20);
+
+            return {
+                integrated: lufs,
+                peak: peakDb,
+                dynamicRange: peakDb - lufs
+            };
+        }
+
+        // ============ CODIFICADORES ============
+        
+        function audioBufferToWav(buffer) {
+            const numChannels = buffer.numberOfChannels;
+            const sampleRate = buffer.sampleRate;
+            const format = 1;
+            const bitDepth = 16;
+            
+            const bytesPerSample = bitDepth / 8;
+            const blockAlign = numChannels * bytesPerSample;
+            const dataLength = buffer.length * blockAlign;
+            const bufferLength = 44 + dataLength;
+            
+            const arrayBuffer = new ArrayBuffer(bufferLength);
+            const view = new DataView(arrayBuffer);
+            
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, bufferLength - 8, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, format, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * blockAlign, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bitDepth, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataLength, true);
+            
+            const channels = [];
+            for (let i = 0; i < numChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+            
+            let offset = 44;
+            for (let i = 0; i < buffer.length; i++) {
+                for (let ch = 0; ch < numChannels; ch++) {
+                    let sample = Math.max(-1, Math.min(1, channels[ch][i]));
+                    sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+                    view.setInt16(offset, sample, true);
+                    offset += 2;
+                }
+            }
+            
+            return new Blob([arrayBuffer], { type: 'audio/wav' });
+        }
+
+        function audioBufferToMp3(buffer) {
+            if (typeof lamejs === 'undefined') {
+                throw new Error('LameJS no disponible. Verifica tu conexión a internet.');
+            }
+            
+            const sampleRate = buffer.sampleRate;
+            const channels = buffer.numberOfChannels;
+            const kbps = 320;
+            
+            const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, kbps);
+            const mp3Data = [];
+            
+            const sampleBlockSize = 1152;
+            const left = convertFloat32ToInt16(buffer.getChannelData(0));
+            const right = channels > 1 ? convertFloat32ToInt16(buffer.getChannelData(1)) : left;
+            
+            for (let i = 0; i < left.length; i += sampleBlockSize) {
+                const leftChunk = left.subarray(i, i + sampleBlockSize);
+                const rightChunk = right.subarray(i, i + sampleBlockSize);
+                
+                let mp3buf;
+                if (channels === 2) {
+                    mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+                } else {
+                    mp3buf = mp3encoder.encodeBuffer(leftChunk);
+                }
+                
+                if (mp3buf.length > 0) {
+                    mp3Data.push(mp3buf);
+                }
+            }
+            
+            const end = mp3encoder.flush();
+            if (end.length > 0) {
+                mp3Data.push(end);
+            }
+            
+            return new Blob(mp3Data, { type: 'audio/mp3' });
+        }
+
+        function convertFloat32ToInt16(float32Array) {
+            const int16 = new Int16Array(float32Array.length);
+            for (let i = 0; i < float32Array.length; i++) {
+                let s = Math.max(-1, Math.min(1, float32Array[i]));
+                int16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+            }
+            return int16;
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        // ============ UI DE PROGRESO ============
+        
+        function showProgress(status, detail = '') {
+            document.getElementById('progressContainer').classList.add('active');
+            document.getElementById('progressStatus').textContent = status;
+            document.getElementById('progressDetail').textContent = detail;
+        }
+
+        function updateProgress(data) {
+            const percent = data.percent.toFixed(1);
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressFill').textContent = percent + '%';
+            document.getElementById('progressPercent').textContent = percent + '%';
+            document.getElementById('progressStatus').textContent = `Renderizando chunk ${data.chunk}/${data.totalChunks}...`;
+            document.getElementById('progressDetail').textContent = `Transcurrido: ${data.elapsed.toFixed(1)}s`;
+            document.getElementById('progressETA').textContent = `ETA: ${data.eta.toFixed(1)}s`;
+        }
+
+        function hideProgress() {
+            document.getElementById('progressContainer').classList.remove('active');
+        }
+
+        function setButtonsDisabled(disabled) {
+            document.getElementById('previewBtn').disabled = disabled;
+            document.getElementById('generateBtn').disabled = disabled;
+            document.getElementById('stopBtn').disabled = !disabled;
+        }
+
+        // ============ GENERAR AUDIO ============
+        
+        async function generateAudio() {
+            if (state.isRendering) return;
+            
+            if (state.voice.enabled && state.voice.script.trim()) {
+                alert('⚠️ La voz guiada usa síntesis en tiempo real y NO se incluye en el archivo.\n\nEl archivo contendrá solo el audio sintetizado.');
+            }
+
+            state.isRendering = true;
+            setButtonsDisabled(true);
+
+            try {
+                const totalDuration = state.duration;
+                const format = state.outputFormat.toUpperCase();
+                const estimatedMB = format === 'WAV' 
+                    ? (totalDuration * SAMPLE_RATE * CHANNELS * 2 / 1024 / 1024).toFixed(1)
+                    : (totalDuration * 320 * 1000 / 8 / 1024 / 1024).toFixed(1);
+                
+                showProgress(
+                    `Iniciando renderizado ${format}...`,
+                    `Duración: ${totalDuration}s · Tamaño estimado: ${estimatedMB} MB`
+                );
+
+                let finalBuffer;
+                if (totalDuration <= 60) {
+                    showProgress('Renderizando...', 'Un solo bloque');
+                    const ctx = new OfflineAudioContext(CHANNELS, Math.ceil(totalDuration * SAMPLE_RATE), SAMPLE_RATE);
+                    buildAudioGraph(ctx, totalDuration, 0);
+                    finalBuffer = await ctx.startRendering();
+                    updateProgress({ percent: 100, chunk: 1, totalChunks: 1, elapsed: 0, eta: 0 });
+                } else {
+                    finalBuffer = await renderChunked(totalDuration, updateProgress);
+                }
+
+                // Calcular LUFS
+                showProgress('📊 Analizando loudness (LUFS)...', 'K-weighting EBU R128');
+                await new Promise(r => setTimeout(r, 50));
+                const lufsData = calculateLUFS(finalBuffer);
+                
+                document.getElementById('lufsIntegrated').textContent = lufsData.integrated.toFixed(1) + ' LUFS';
+                document.getElementById('lufsPeak').textContent = lufsData.peak.toFixed(1) + ' dB';
+                document.getElementById('lufsRange').textContent = lufsData.dynamicRange.toFixed(1) + ' dB';
+                document.getElementById('lufsBox').classList.add('active');
+                document.getElementById('statusLUFS').textContent = lufsData.integrated.toFixed(1) + ' LUFS';
+
+                // Codificar
+                showProgress(`Codificando ${format}...`, format === 'WAV' ? '16-bit PCM' : 'MP3 320 kbps CBR');
+                await new Promise(r => setTimeout(r, 50));
+                
+                let blob;
+                if (format === 'WAV') {
+                    blob = audioBufferToWav(finalBuffer);
+                } else {
+                    blob = audioBufferToMp3(finalBuffer);
+                }
+                
+                showProgress('Preparando descarga...', `Tamaño final: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
+                await new Promise(r => setTimeout(r, 100));
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const sessionName = document.getElementById('sessionName').value || 'NeuroWave';
+                const safeName = sessionName.replace(/[^a-z0-9_\-]/gi, '_');
+                const ext = format.toLowerCase();
+                a.href = url;
+                a.download = `${safeName}_${state.toneType}_${state.targetFreq}Hz_${totalDuration}s.${ext}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+                showProgress(`✅ ¡Completado! (${format})`, `Archivo: ${a.download}`);
+                document.getElementById('progressFill').style.background = 'linear-gradient(90deg, #10b981, #06b6d4)';
+                
+                setTimeout(hideProgress, 4000);
+
+            } catch (err) {
+                if (err.message === 'CANCELLED') {
+                    showProgress('⏹️ Cancelado', 'Renderizado detenido');
+                } else {
+                    console.error(err);
+                    showProgress('❌ Error', err.message);
+                }
+                setTimeout(hideProgress, 4000);
+            } finally {
+                state.isRendering = false;
+                setButtonsDisabled(false);
+            }
+        }
+
+        // ============ PREVIEW CON FFT EN TIEMPO REAL ============
+        
+        function createAudioContext() {
+            if (!state.audioContext) {
+                state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return state.audioContext;
+        }
+
+        async function previewAudio() {
+            if (state.isPlaying || state.isRendering) return;
+            
+            const ctx = createAudioContext();
+            await ctx.resume();
+            
+            state.isPlaying = true;
+            setButtonsDisabled(true);
+            const duration = 10;
+
+            // Crear analyser para FFT
+            state.analyser = ctx.createAnalyser();
+            state.analyser.fftSize = 2048;
+            state.analyser.smoothingTimeConstant = 0.8;
+            state.analyser.connect(ctx.destination);
+
+            buildAudioGraph(ctx, duration, ctx.currentTime, state.analyser);
+
+            // Iniciar animación FFT
+            startFFTAnimation();
+
+            if (state.voice.enabled && state.voice.script) {
+                speakScript(state.voice.script, state.voice.voice, state.voice.speed, dbToLinear(state.voice.vol));
+            }
+
+            setTimeout(() => {
+                state.isPlaying = false;
+                setButtonsDisabled(false);
+                stopFFTAnimation();
+                drawVisualizerIdle();
+            }, duration * 1000);
+        }
+
+        function startFFTAnimation() {
+            const canvas = document.getElementById('visualizer');
+            const ctx = canvas.getContext('2d');
+            const analyser = state.analyser;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                if (!state.isPlaying) return;
+                state.fftAnimId = requestAnimationFrame(draw);
+
+                analyser.getByteFrequencyData(dataArray);
+
+                const width = canvas.width = canvas.offsetWidth;
+                const height = canvas.height = canvas.offsetHeight;
+
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, width, height);
+
+                const barWidth = (width / bufferLength) * 2.5;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const barHeight = (dataArray[i] / 255) * height;
+                    
+                    const hue = (i / bufferLength) * 240 + 200;
+                    ctx.fillStyle = `hsl(${hue}, 80%, 60%)`;
+                    ctx.fillRect(x, height - barHeight, barWidth, barHeight);
+                    
+                    x += barWidth + 1;
+                    if (x > width) break;
+                }
+
+                // Overlay de forma de onda
+                const timeData = new Uint8Array(bufferLength);
+                analyser.getByteTimeDomainData(timeData);
+                
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                const sliceWidth = width / bufferLength;
+                let xPos = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = timeData[i] / 128.0;
+                    const y = (v * height) / 2;
+                    if (i === 0) ctx.moveTo(xPos, y);
+                    else ctx.lineTo(xPos, y);
+                    xPos += sliceWidth;
+                }
+                ctx.stroke();
+            }
+
+            draw();
+        }
+
+        function stopFFTAnimation() {
+            if (state.fftAnimId) {
+                cancelAnimationFrame(state.fftAnimId);
+                state.fftAnimId = null;
+            }
+        }
+
+        function drawVisualizerIdle() {
+            const canvas = document.getElementById('visualizer');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+            
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, width, height);
+            
+            ctx.strokeStyle = '#6366f1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let i = 0; i < width; i++) {
+                const y = height / 2 + Math.sin(i * 0.02) * 15;
+                if (i === 0) ctx.moveTo(i, y);
+                else ctx.lineTo(i, y);
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
+            ctx.font = '11px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('FFT Analyzer · Pulsa Preview para activar', width/2, height/2 + 4);
+        }
+
+        function stopAudio() {
+            if (state.isRendering) {
+                state.isRendering = false;
+                return;
+            }
+            if (state.audioContext) {
+                state.audioContext.close();
+                state.audioContext = null;
+            }
+            state.isPlaying = false;
+            stopFFTAnimation();
+            setButtonsDisabled(false);
+            drawVisualizerIdle();
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+        }
+
+        function speakScript(script, voiceName, rate, volume) {
+            if (!window.speechSynthesis) return;
+            const lines = script.split('\n').filter(line => line.trim());
+            let index = 0;
+            function speakNext() {
+                if (index >= lines.length || !state.isPlaying) return;
+                const utterance = new SpeechSynthesisUtterance(lines[index]);
+                utterance.rate = rate;
+                utterance.volume = volume;
+                const voices = window.speechSynthesis.getVoices();
+                const voice = voices.find(v => v.name.includes(voiceName.split('-').pop().replace('Neural', '')));
+                if (voice) utterance.voice = voice;
+                utterance.onend = () => { index++; setTimeout(speakNext, 2000); };
+                window.speechSynthesis.speak(utterance);
+            }
+            speakNext();
+        }
+
+        window.addEventListener('load', init);
+        window.addEventListener('resize', () => {
+            if (!state.isPlaying) drawVisualizerIdle();
+        });
+    </script>
+</body>
+</html>
